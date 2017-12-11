@@ -1,0 +1,41 @@
+{
+  "name": "drive-shots",
+  "version": "0.0.0-development",
+  "description": "electron app that works with google drive to save screenshots and copy shortened url into the clipboard",
+  "main": "build/app.js",
+  "scripts": {
+    "start": "electron .",
+    "clean": "del-cli ./build ./coverage",
+    "build": "npm run clean && tsc -p ./config/tsconfig.build.json",
+    "develop": "npm run clean && tsc -p .",
+    "lint": "tslint -c ./tslint.json -p ./config/tsconfig.build.json",
+    "test": "npm run lint && npm run clean && jest -c ./jest.json",
+    "test:watch": "npm run clean && jest -c ./jest.json --watch"
+  },
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "GIT URL"
+  },
+  "engines": {
+    "node": ">=7",
+    "npm": "*"
+  },
+  "author": "Christoph Bühler <christoph@smartive.ch>",
+  "license": "ISC",
+  "dependencies": {
+    "tslib": "^1.8.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^21.1.8",
+    "del-cli": "^1.1.0",
+    "electron": "^1.7.9",
+    "electron-builder": "^19.48.3",
+    "jest": "^21.2.1",
+    "ts-jest": "^21.2.4",
+    "tslint": "^5.8.0",
+    "tslint-config-airbnb": "^5.4.2",
+    "tsutils": "^2.13.0",
+    "typescript": "^2.6.2"
+  }
+}
