@@ -2,6 +2,9 @@
     "extends": "tslint-config-airbnb",
     "rules": {
         "function-name": false,
+        "no-boolean-literal-compare": false,
+        "strict-boolean-expressions": false,
+        "import-name": false,
         "max-line-length": [
             true,
             125
@@ -9,21 +12,7 @@
         "member-ordering": [
             true,
             {
-                "order": [
-                    "public-static-field",
-                    "protected-static-field",
-                    "private-static-field",
-                    "public-instance-field",
-                    "protected-instance-field",
-                    "private-instance-field",
-                    "constructor",
-                    "public-static-method",
-                    "protected-static-method",
-                    "private-static-method",
-                    "public-instance-method",
-                    "protected-instance-method",
-                    "private-instance-method"
-                ]
+                "order": "fields-first"
             }
         ],
         "no-increment-decrement": false,
