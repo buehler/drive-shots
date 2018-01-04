@@ -2,7 +2,6 @@ import { FSWatcher, watch } from 'chokidar';
 import { app, clipboard, Notification } from 'electron';
 import { unlinkSync } from 'fs';
 
-import Assets from './assets';
 import { getDriveAppFolder, shareDriveFile, uploadFileToFolder } from './drive';
 import { DriveShotsSharedImage } from './drive-shots-image';
 import jsonConfig from './json-config';
@@ -48,7 +47,6 @@ export default class Watcher {
         const notification = new Notification({
             title: 'Screenshot uploaded',
             body: 'The URL has been copied to your clipboard',
-            icon: Assets.getNativeImage('images/drive.png'),
         });
         notification.on('click', () => opn(sharedImage.url));
         notification.show();
