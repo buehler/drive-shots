@@ -13,6 +13,7 @@
     "lint": "tslint -c ./tslint.json -p ./config/tsconfig.build.json",
     "test": "npm run lint && npm run clean && jest -c ./jest.json",
     "test:watch": "npm run clean && jest -c ./jest.json --watch",
+    "semantic-release": "semantic-release",
     "builder": "electron-builder"
   },
   "keywords": [],
@@ -42,6 +43,15 @@
       }
     }
   },
+  "release": {
+    "verifyConditions": [
+      "github"
+    ],
+    "getLastRelease": "@semantic-release/git",
+    "publish": [
+      "github"
+    ]
+  },
   "dependencies": {
     "chokidar": "^2.0.0",
     "electron-json-config": "^1.5.0",
@@ -53,6 +63,7 @@
     "tslib": "^1.8.1"
   },
   "devDependencies": {
+    "@semantic-release/git": "^2.0.1",
     "@types/chokidar": "^1.7.4",
     "@types/jest": "^21.1.8",
     "@types/node": "^8.0.57",
@@ -61,6 +72,7 @@
     "electron": "^1.7.9",
     "electron-builder": "^19.48.3",
     "jest": "^21.2.1",
+    "semantic-release": "^12.1.0",
     "ts-jest": "^21.2.4",
     "tslint": "^5.8.0",
     "tslint-config-airbnb": "^5.4.2",
