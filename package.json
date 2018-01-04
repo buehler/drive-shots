@@ -8,13 +8,13 @@
     "start": "electron .",
     "clean": "del-cli ./dist ./build ./coverage",
     "copy-assets": "cp-cli -d ./src/assets ./build/assets",
-    "build": "npm run clean && npm run copy-assets && tsc -p ./config/tsconfig.build.json",
+    "build": "npm run clean && tsc -p ./config/tsconfig.build.json && npm run copy-assets",
     "develop": "npm run clean && npm run copy-assets && tsc -p .",
     "lint": "tslint -c ./tslint.json -p ./config/tsconfig.build.json",
     "test": "npm run lint && npm run clean && jest -c ./jest.json",
     "test:watch": "npm run clean && jest -c ./jest.json --watch",
     "semantic-release": "semantic-release",
-    "builder": "electron-builder"
+    "builder": "electron-builder --publish always --prerelease false --draft false"
   },
   "keywords": [],
   "repository": {
@@ -30,6 +30,10 @@
   "build": {
     "appId": "ch.cbue.drive-shots",
     "productName": "drive-shots",
+    "publish": {
+      "provider": "github",
+      "releaseType": "release"
+    },
     "files": [
       "build/**/*"
     ],
@@ -41,15 +45,18 @@
         "LSBackgroundOnly": 1,
         "LSUIElement": 1
       }
+    },
+    "linux": {
+      "category": "Utility"
     }
   },
   "release": {
     "verifyConditions": [
-      "github"
+      "@semantic-release/github"
     ],
     "getLastRelease": "@semantic-release/git",
     "publish": [
-      "github"
+      "@semantic-release/github"
     ]
   },
   "dependencies": {

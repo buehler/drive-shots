@@ -1,0 +1,27 @@
+version: "{build} - {branch}"
+image: Visual Studio 2017
+platform: x64
+
+skip_non_tags: true
+
+cache:
+  - node_modules
+  - '%USERPROFILE%\.electron'
+
+environment:
+  nodejs_version: "9"
+
+init:
+  - git config --global core.autocrlf input
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - npm install -g yarn
+  - yarn install
+
+test: off
+
+build_script:
+  - yarn build
+  - ps: yarn version --new-version $env:APPVEYOR_REPO_TAG_NAME.Substring(1) --no-git-tag-version
+  - yarn builder
