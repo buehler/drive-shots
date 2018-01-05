@@ -36,6 +36,8 @@ export default class DriveUploader {
             this.auth.authenticationChanged,
             this.detector.screenshotDetected,
         ).subscribe(data => this.upload(data));
+        this.auth.authenticationChanged.subscribe(auth => console.log('uploader, auth', auth));
+        this.detector.screenshotDetected.subscribe(path => console.log('uploader, path', path));
     }
 
     private async upload([authenticated, path]: [boolean, string]): Promise<void> {

@@ -42,7 +42,7 @@ if (platform() === 'win32') {
 // OSX bindings
 
 if (platform() === 'darwin') {
-    ioc.bind<ScreenshotDetector>(iocSymbols.screenshotDetector).to(ScreenshotDetectorMacos);
+    ioc.bind<ScreenshotDetector>(iocSymbols.screenshotDetector).to(ScreenshotDetectorMacos).inSingletonScope();
 }
 
 // Linux bindings
