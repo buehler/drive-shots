@@ -5,10 +5,12 @@ import { platform } from 'os';
 
 import App from './app';
 import Assets from './assets';
-import drive from './google/drive';
+import jsonConfig, { JsonConfig } from './config/json-config';
+import drive, { Drive } from './google/drive';
 import AutoUpdater from './utils/auto-updater';
 
 export const iocSymbols = {
+    config: Symbol('config'),
     drive: Symbol('drive'),
 };
 
@@ -18,8 +20,9 @@ const ioc = new Container();
 
 ioc.bind(App).to(App).inSingletonScope();
 ioc.bind(Assets).to(Assets);
-ioc.bind<any>(iocSymbols.drive).to(drive);
+ioc.bind<Drive>(iocSymbols.drive).toConstantValue(drive);
 ioc.bind(AutoUpdater).to(AutoUpdater).inSingletonScope();
+ioc.bind<JsonConfig>(iocSymbols.config).toConstantValue(jsonConfig);
 // Logger
 // Auth
 // Drive

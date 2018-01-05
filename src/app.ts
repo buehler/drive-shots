@@ -20,5 +20,9 @@ export default class App {
         app.on('ready', async () => {
             this.updater.start();
         });
+
+        app.on('quit', () => {
+            this.updater.stop();
+        });
     }
 }

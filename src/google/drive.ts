@@ -10,6 +10,24 @@ for (const category of Object.keys(drive)) {
     }
 }
 
+interface About {
+    get(params: { fields: string }, options?: any): Promise<any>;
+}
+
+interface Files {
+
+}
+
+interface Permissions {
+
+}
+
+export interface Drive {
+    about: About;
+    files: Files;
+    permissions: Permissions;
+}
+
 export default drive;
 
 // const mime = require('mime');

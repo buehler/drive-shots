@@ -9,7 +9,7 @@ export default class AutoUpdater {
         autoUpdater.checkForUpdatesAndNotify();
         this.interval = setInterval(
             () => autoUpdater.checkForUpdatesAndNotify(),
-            3 * 60 * 60 * 1000, // 3 hours
+            8 * 60 * 60 * 1000, // 8 hours
         );
     }
 
