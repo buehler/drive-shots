@@ -1,10 +1,14 @@
-import { app, Menu, MenuItemConstructorOptions, NativeImage, Tray } from 'electron';
+import { app, clipboard, Menu, MenuItemConstructorOptions, NativeImage, Tray } from 'electron';
 import { inject, injectable } from 'inversify';
 
 import Assets from '../assets';
 import Authentication from '../authentication';
+import { JsonConfig } from '../config/json-config';
 import DriveApi from '../google/drive-api';
 import iocSymbols from '../ioc-symbols';
+import { DriveShotsSharedImage } from '../models/drive-shots-image';
+
+const opn = require('opn');
 
 export const enum TrayIconState {
     Idle,
@@ -38,6 +42,7 @@ export default class TrayIcon {
         @inject(iocSymbols.assets) private readonly assets: Assets,
         @inject(iocSymbols.authentication) private readonly authentication: Authentication,
         @inject(iocSymbols.drive) private readonly drive: DriveApi,
+        @inject(iocSymbols.config) private readonly config: JsonConfig,
     ) {
         if (!TrayIcon.idleIcon) {
             TrayIcon.idleIcon = assets.getNativeImage('icons/tray-drive-shots.png', true);
@@ -64,6 +69,20 @@ export default class TrayIcon {
         if (authenticated) {
             const userinfo = await this.drive.about.get({ fields: 'user,storageQuota' });
             const usage = userinfo.storageQuota.usage / 1024 / 1024 / 1024;
+
+            const images = this.config.get('shared-images', [] as DriveShotsSharedImage[]);
+            template.unshift({
+                label: 'History',
+                type: 'submenu',
+                submenu: images.map(image => ({
+                    label: image.name,
+                    click: () => {
+                        opn(image.url);
+                        clipboard.writeText(image.url);
+                    },
+                })),
+            });
+
             template.unshift({
                 label: userinfo.user.displayName,
                 icon: this.assets.getNativeImage('images/drive.png'),
