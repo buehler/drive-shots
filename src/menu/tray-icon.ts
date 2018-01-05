@@ -76,9 +76,7 @@ export default class TrayIcon {
                     { type: 'separator' },
                     {
                         label: 'Deauthorize',
-                        async click(): Promise<void> {
-                            console.log('asdf');
-                        },
+                        click: () => this.authentication.deauthorize(),
                     },
                 ],
             });
@@ -86,9 +84,7 @@ export default class TrayIcon {
             template.unshift({
                 label: 'Authenticate Drive',
                 icon: this.assets.getNativeImage('images/drive.png'),
-                async click(): Promise<void> {
-                    // await this.auth.authenticate();
-                },
+                click: () => this.authentication.authenticate(),
             });
         }
 

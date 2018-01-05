@@ -11,15 +11,10 @@ export default class DriveShots {
     constructor(
         @inject(iocSymbols.autoUpdater) private updater: AutoUpdater,
         @inject(iocSymbols.authentication) private auth: Authentication,
-        @inject(iocSymbols.trayIcon) private tray: TrayIcon, // for now
+        @inject(iocSymbols.trayIcon) private tray: TrayIcon,
     ) { }
 
     public start(): void {
-        console.log('start');
-        /*
-        authenticate, start menu / tray icon, then start detector
-        */
-
         app.dock.hide();
 
         app.on('ready', () => {
@@ -28,10 +23,6 @@ export default class DriveShots {
             // this.menu.start();
             // this.detector.start();
             this.auth.checkAuthentication();
-        });
-
-        app.on('quit', () => {
-            this.updater.stop();
         });
     }
 }
