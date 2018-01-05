@@ -73,13 +73,14 @@
     "moment": "^2.20.1",
     "opn": "^5.1.0",
     "reflect-metadata": "^0.1.10",
-    "tslib": "^1.8.1"
+    "tslib": "^1.8.1",
+    "util.promisify": "^1.0.0"
   },
   "devDependencies": {
     "@semantic-release/git": "^2.0.1",
     "@types/chokidar": "^1.7.4",
     "@types/jest": "^21.1.8",
-    "@types/node": "^8.0.57",
+    "@types/node": "^7",
     "cp-cli": "^1.1.0",
     "del-cli": "^1.1.0",
     "electron": "^1.7.9",

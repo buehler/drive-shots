@@ -5,9 +5,11 @@ import { platform } from 'os';
 
 import App from './app';
 import Assets from './assets';
+import drive from './google/drive';
+import AutoUpdater from './utils/auto-updater';
 
 export const iocSymbols = {
-
+    drive: Symbol('drive'),
 };
 
 const ioc = new Container();
@@ -16,6 +18,8 @@ const ioc = new Container();
 
 ioc.bind(App).to(App).inSingletonScope();
 ioc.bind(Assets).to(Assets);
+ioc.bind<any>(iocSymbols.drive).to(drive);
+ioc.bind(AutoUpdater).to(AutoUpdater).inSingletonScope();
 // Logger
 // Auth
 // Drive
