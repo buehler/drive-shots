@@ -5,5 +5,8 @@ export default {
     config: Symbol('config'),
     drive: Symbol('drive'),
     driveShots: Symbol('driveShots'),
+    screenshotDetector: Symbol('screenshotDetector'),
     trayIcon: Symbol('trayIcon'),
+    uploader: Symbol('uploader'),
+    urlShortener: Symbol('urlShortener'),
 };

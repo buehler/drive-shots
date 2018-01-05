@@ -4,6 +4,7 @@ import { inject, injectable } from 'inversify';
 import Authentication from './authentication';
 import iocSymbols from './ioc-symbols';
 import TrayIcon from './menu/tray-icon';
+import DriveUploader from './uploader/drive-uploader';
 import AutoUpdater from './utils/auto-updater';
 
 @injectable()
@@ -12,6 +13,7 @@ export default class DriveShots {
         @inject(iocSymbols.autoUpdater) private updater: AutoUpdater,
         @inject(iocSymbols.authentication) private auth: Authentication,
         @inject(iocSymbols.trayIcon) private tray: TrayIcon,
+        @inject(iocSymbols.uploader) private uploader: DriveUploader,
     ) { }
 
     public start(): void {

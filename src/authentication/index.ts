@@ -87,6 +87,7 @@ export default class Authentication {
 
     public deauthorize(): void {
         this.config.delete('google-auth-token');
+        this.config.delete('shared-images');
         this._authenticationChanged.next(false);
     }
 
