@@ -4,6 +4,7 @@ import { Container } from 'inversify';
 import { platform } from 'os';
 
 import App from './app';
+import Assets from './assets';
 
 export const iocSymbols = {
 
@@ -14,6 +15,7 @@ const ioc = new Container();
 // General bindings
 
 ioc.bind(App).to(App).inSingletonScope();
+ioc.bind(Assets).to(Assets);
 // Logger
 // Auth
 // Drive

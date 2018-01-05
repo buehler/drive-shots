@@ -42,7 +42,7 @@
       "build/**/*"
     ],
     "directories": {
-      "buildResources": "src/resources"
+      "buildResources": "src/_build-resources"
     },
     "mac": {
       "extendInfo": {
