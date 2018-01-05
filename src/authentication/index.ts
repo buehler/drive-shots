@@ -1,17 +1,15 @@
 import googleapis = require('googleapis');
 import { createServer, IncomingMessage, Server, ServerResponse } from 'http';
+import { inject, injectable } from 'inversify';
+import { Observable, Subject } from 'rxjs';
 import { parse } from 'url';
 
-import jsonConfig from './json-config';
+import { JsonConfig } from '../config/json-config';
+import DriveApi from '../google/drive-api';
+import iocSymbols from '../ioc-symbols';
+import { AuthToken } from './auth-token';
 
 const opn = require('opn');
-
-interface AuthToken {
-    access_token: string;
-    expiry_date: number;
-    refresh_token: string;
-    token_type: string;
-}
 
 const scopes = [
     'https://www.googleapis.com/auth/drive',
@@ -42,14 +40,27 @@ const html = `
 </html>
 `;
 
+@injectable()
 export default class Authentication {
+    private _authenticationChanged: Subject<boolean> = new Subject();
     private server?: Server;
 
-    public checkAuthentication(): Promise<boolean> {
-        if (!jsonConfig.has('google-auth-token')) {
-            return Promise.resolve(false);
+    public get authenticationChanged(): Observable<boolean> {
+        return this._authenticationChanged;
+    }
+
+    constructor(
+        @inject(iocSymbols.drive) private readonly drive: DriveApi,
+        @inject(iocSymbols.config) private readonly config: JsonConfig,
+    ) { }
+
+    public async checkAuthentication(): Promise<void> {
+        if (!this.config.has('google-auth-token')) {
+            this._authenticationChanged.next(false);
+            return;
         }
-        const token = jsonConfig.get('google-auth-token') as AuthToken;
+
+        const token = this.config.get('google-auth-token') as AuthToken;
         const auth = new googleapis.auth.OAuth2(
             '848319290605-ub6c120lupp321fj1al65m9nb9cf3eul.apps.googleusercontent.com',
             '0o5sCCiYLRjSjAkgC681U67v',
@@ -59,35 +70,25 @@ export default class Authentication {
             auth,
         });
 
-        return new Promise((resolve) => {
-            const drive = googleapis.drive('v3');
-            drive.about.get(
-                {
-                    fields: 'user',
-                },
-                (err) => {
-                    if (err) {
-                        resolve(false);
-                        return;
-                    }
-                    resolve(true);
-                },
-            );
-        });
+        try {
+            await this.drive.about.get({ fields: 'user' });
+            this._authenticationChanged.next(true);
+        } catch {
+            this._authenticationChanged.next(false);
+        }
     }
 
     public async authenticate(): Promise<void> {
         const token = await this.getAuthToken();
         this.stopListener();
-        jsonConfig.set('google-auth-token', token);
-        const auth = new googleapis.auth.OAuth2(
-            '848319290605-ub6c120lupp321fj1al65m9nb9cf3eul.apps.googleusercontent.com',
-            '0o5sCCiYLRjSjAkgC681U67v',
-        );
-        auth.credentials = token;
-        googleapis.options({
-            auth,
-        });
+        this.config.set('google-auth-token', token);
+        this.checkAuthentication();
+    }
+
+    public deauthorize(): void {
+        this.config.delete('google-auth-token');
+        this.config.delete('shared-images');
+        this._authenticationChanged.next(false);
     }
 
     private getAuthToken(): Promise<AuthToken> {

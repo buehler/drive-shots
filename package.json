@@ -16,7 +16,11 @@
     "semantic-release": "semantic-release",
     "builder": "electron-builder --publish always --prerelease false --draft false"
   },
-  "keywords": [],
+  "keywords": [
+    "electron",
+    "screenshots",
+    "google drive"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/buehler/drive-shots.git"
@@ -29,7 +33,7 @@
   "license": "MIT",
   "build": {
     "appId": "ch.cbue.drive-shots",
-    "productName": "drive-shots",
+    "productName": "Drive Shots",
     "publish": {
       "provider": "github",
       "releaseType": "release"
@@ -38,7 +42,7 @@
       "build/**/*"
     ],
     "directories": {
-      "buildResources": "src/resources"
+      "buildResources": "src/_build-resources"
     },
     "mac": {
       "extendInfo": {
@@ -64,16 +68,20 @@
     "electron-json-config": "^1.5.0",
     "electron-updater": "^2.18.2",
     "googleapis": "^23.0.0",
+    "inversify": "^4.9.0",
     "mime": "^2.1.0",
     "moment": "^2.20.1",
     "opn": "^5.1.0",
-    "tslib": "^1.8.1"
+    "reflect-metadata": "^0.1.10",
+    "rxjs": "^5.5.6",
+    "tslib": "^1.8.1",
+    "util.promisify": "^1.0.0"
   },
   "devDependencies": {
     "@semantic-release/git": "^2.0.1",
     "@types/chokidar": "^1.7.4",
     "@types/jest": "^21.1.8",
-    "@types/node": "^8.0.57",
+    "@types/node": "^7",
     "cp-cli": "^1.1.0",
     "del-cli": "^1.1.0",
     "electron": "^1.7.9",
