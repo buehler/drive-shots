@@ -1,57 +1,66 @@
-import { app, MenuItemConstructorOptions } from 'electron';
-import { autoUpdater } from 'electron-updater';
+import 'reflect-metadata';
 
-import Assets from './assets';
-import Authentication from './authentication';
-import { getDriveUserInfo } from './drive';
-import TrayIcon from './tray-icon';
-import Watcher from './watcher';
+import App from './app';
+import ioc from './ioc';
 
-autoUpdater.checkForUpdatesAndNotify();
+const app = ioc.get(App);
 
-app.dock.hide();
+app.start();
 
-app.on('ready', async () => {
-    const auth = new Authentication();
+// import { app, MenuItemConstructorOptions } from 'electron';
+// import { autoUpdater } from 'electron-updater';
 
-    const isAuthenticated = await auth.checkAuthentication();
+// import Assets from './assets';
+// import Authentication from './authentication';
+// import { getDriveUserInfo } from './drive';
+// import TrayIcon from './tray-icon';
+// import Watcher from './watcher';
 
-    const template: MenuItemConstructorOptions[] = [
-        { type: 'separator' },
-        { label: 'Quit', click: () => { app.quit(); } },
-    ];
+// autoUpdater.checkForUpdatesAndNotify();
 
-    if (isAuthenticated) {
-        const userinfo = await getDriveUserInfo();
-        template.unshift({
-            label: userinfo.displayName,
-            icon: Assets.getNativeImage('images/drive.png'),
-            type: 'submenu',
-            submenu: [
-                {
-                    label: `usage: ${userinfo.usage} ${userinfo.unit}`,
-                    enabled: false,
-                },
-                { type: 'separator' },
-                {
-                    label: 'Deauthorize',
-                    async click(): Promise<void> {
-                        console.log('asdf');
-                    },
-                },
-            ],
-        });
-    } else {
-        template.unshift({
-            label: 'Authenticate Drive',
-            icon: Assets.getNativeImage('images/drive.png'),
-            async click(): Promise<void> {
-                await auth.authenticate();
-            },
-        });
-    }
+// app.dock.hide();
 
-    const tray = new TrayIcon(template);
-    const watcher = new Watcher(tray);
-    await watcher.start();
-});
+// app.on('ready', async () => {
+//     const auth = new Authentication();
+
+//     const isAuthenticated = await auth.checkAuthentication();
+
+//     const template: MenuItemConstructorOptions[] = [
+//         { type: 'separator' },
+//         { label: 'Quit', click: () => { app.quit(); } },
+//     ];
+
+//     if (isAuthenticated) {
+//         const userinfo = await getDriveUserInfo();
+//         template.unshift({
+//             label: userinfo.displayName,
+//             icon: Assets.getNativeImage('images/drive.png'),
+//             type: 'submenu',
+//             submenu: [
+//                 {
+//                     label: `usage: ${userinfo.usage} ${userinfo.unit}`,
+//                     enabled: false,
+//                 },
+//                 { type: 'separator' },
+//                 {
+//                     label: 'Deauthorize',
+//                     async click(): Promise<void> {
+//                         console.log('asdf');
+//                     },
+//                 },
+//             ],
+//         });
+//     } else {
+//         template.unshift({
+//             label: 'Authenticate Drive',
+//             icon: Assets.getNativeImage('images/drive.png'),
+//             async click(): Promise<void> {
+//                 await auth.authenticate();
+//             },
+//         });
+//     }
+
+//     const tray = new TrayIcon(template);
+//     const watcher = new Watcher(tray);
+//     await watcher.start();
+// });
