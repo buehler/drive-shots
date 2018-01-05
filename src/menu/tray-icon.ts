@@ -55,7 +55,7 @@ export default class TrayIcon {
         this.authentication.authenticationChanged.subscribe(auth => this.buildContextMenu(auth));
     }
 
-    private async buildContextMenu(authenticated: boolean): Promise<void> {
+    public async buildContextMenu(authenticated: boolean): Promise<void> {
         const template: MenuItemConstructorOptions[] = [
             { type: 'separator' },
             { label: 'Quit', click: () => { app.quit(); } },
@@ -70,7 +70,7 @@ export default class TrayIcon {
                 type: 'submenu',
                 submenu: [
                     {
-                        label: `usage: ${usage} GB`,
+                        label: `usage: ${Math.round(usage * 100) / 100} GB`,
                         enabled: false,
                     },
                     { type: 'separator' },

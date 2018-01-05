@@ -36,8 +36,6 @@ export default class DriveUploader {
             this.auth.authenticationChanged,
             this.detector.screenshotDetected,
         ).subscribe(data => this.upload(data));
-        this.auth.authenticationChanged.subscribe(auth => console.log('uploader, auth', auth));
-        this.detector.screenshotDetected.subscribe(path => console.log('uploader, path', path));
     }
 
     private async upload([authenticated, path]: [boolean, string]): Promise<void> {
@@ -80,7 +78,7 @@ export default class DriveUploader {
 
         const images = this.config.get('shared-images', [] as DriveShotsSharedImage[]);
         images.unshift(sharedImage);
-        this.config.set('shared-images', images);
+        this.config.set('shared-images', images.slice(0, 5));
 
         clipboard.writeText(sharedImage.url);
         unlinkSync(path);
@@ -91,6 +89,8 @@ export default class DriveUploader {
         });
         notification.on('click', () => opn(sharedImage.url));
         notification.show();
+
+        this.icon.buildContextMenu(authenticated);
     }
 
     private async uploadToFolder(path: string): Promise<DriveShotsImage> {
