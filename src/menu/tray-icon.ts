@@ -1,6 +1,10 @@
-import { Menu, MenuItemConstructorOptions, NativeImage, Tray } from 'electron';
+import { app, Menu, MenuItemConstructorOptions, NativeImage, Tray } from 'electron';
+import { inject, injectable } from 'inversify';
 
-import Assets from './assets';
+import Assets from '../assets';
+import Authentication from '../authentication';
+import DriveApi from '../google/drive-api';
+import iocSymbols from '../ioc-symbols';
 
 export const enum TrayIconState {
     Idle,
@@ -8,6 +12,7 @@ export const enum TrayIconState {
     Error,
 }
 
+@injectable()
 export default class TrayIcon {
     private static idleIcon: NativeImage;
     private static syncIcon: NativeImage;
@@ -29,17 +34,64 @@ export default class TrayIcon {
         }
     }
 
-    constructor(template: MenuItemConstructorOptions[]) {
+    constructor(
+        @inject(iocSymbols.assets) private readonly assets: Assets,
+        @inject(iocSymbols.authentication) private readonly authentication: Authentication,
+        @inject(iocSymbols.drive) private readonly drive: DriveApi,
+    ) {
         if (!TrayIcon.idleIcon) {
-            TrayIcon.idleIcon = Assets.getNativeImage('icons/tray-drive-shots.png', true);
+            TrayIcon.idleIcon = assets.getNativeImage('icons/tray-drive-shots.png', true);
         }
         if (!TrayIcon.syncIcon) {
-            TrayIcon.syncIcon = Assets.getNativeImage('icons/tray-drive-shots-syncing.png', true);
+            TrayIcon.syncIcon = assets.getNativeImage('icons/tray-drive-shots-syncing.png', true);
         }
         if (!TrayIcon.errorIcon) {
-            TrayIcon.errorIcon = Assets.getNativeImage('icons/tray-drive-shots-sync-error.png', true);
+            TrayIcon.errorIcon = assets.getNativeImage('icons/tray-drive-shots-sync-error.png', true);
         }
+    }
+
+    public setup(): void {
         this.trayElement = new Tray(TrayIcon.idleIcon);
+        this.authentication.authenticationChanged.subscribe(auth => this.buildContextMenu(auth));
+    }
+
+    private async buildContextMenu(authenticated: boolean): Promise<void> {
+        const template: MenuItemConstructorOptions[] = [
+            { type: 'separator' },
+            { label: 'Quit', click: () => { app.quit(); } },
+        ];
+
+        if (authenticated) {
+            const userinfo = await this.drive.about.get({ fields: 'user,storageQuota' });
+            const usage = userinfo.storageQuota.usage / 1024 / 1024 / 1024;
+            template.unshift({
+                label: userinfo.user.displayName,
+                icon: this.assets.getNativeImage('images/drive.png'),
+                type: 'submenu',
+                submenu: [
+                    {
+                        label: `usage: ${usage} GB`,
+                        enabled: false,
+                    },
+                    { type: 'separator' },
+                    {
+                        label: 'Deauthorize',
+                        async click(): Promise<void> {
+                            console.log('asdf');
+                        },
+                    },
+                ],
+            });
+        } else {
+            template.unshift({
+                label: 'Authenticate Drive',
+                icon: this.assets.getNativeImage('images/drive.png'),
+                async click(): Promise<void> {
+                    // await this.auth.authenticate();
+                },
+            });
+        }
+
         const context = Menu.buildFromTemplate(template);
         this.trayElement.setContextMenu(context);
     }

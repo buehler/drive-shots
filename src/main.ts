@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 
-import App from './app';
+import DriveShots from './drive-shots';
 import ioc from './ioc';
+import iocSymbols from './ioc-symbols';
 
-const app = ioc.get(App);
-
-app.start();
+const driveShots = ioc.get<DriveShots>(iocSymbols.driveShots);
+driveShots.start();
 
 // import { app, MenuItemConstructorOptions } from 'electron';
 // import { autoUpdater } from 'electron-updater';
@@ -30,35 +30,35 @@ app.start();
 //         { label: 'Quit', click: () => { app.quit(); } },
 //     ];
 
-//     if (isAuthenticated) {
-//         const userinfo = await getDriveUserInfo();
-//         template.unshift({
-//             label: userinfo.displayName,
-//             icon: Assets.getNativeImage('images/drive.png'),
-//             type: 'submenu',
-//             submenu: [
-//                 {
-//                     label: `usage: ${userinfo.usage} ${userinfo.unit}`,
-//                     enabled: false,
-//                 },
-//                 { type: 'separator' },
-//                 {
-//                     label: 'Deauthorize',
-//                     async click(): Promise<void> {
-//                         console.log('asdf');
-//                     },
-//                 },
-//             ],
-//         });
-//     } else {
-//         template.unshift({
-//             label: 'Authenticate Drive',
-//             icon: Assets.getNativeImage('images/drive.png'),
-//             async click(): Promise<void> {
-//                 await auth.authenticate();
-//             },
-//         });
-//     }
+    // if (isAuthenticated) {
+    //     const userinfo = await getDriveUserInfo();
+    //     template.unshift({
+    //         label: userinfo.displayName,
+    //         icon: Assets.getNativeImage('images/drive.png'),
+    //         type: 'submenu',
+    //         submenu: [
+    //             {
+    //                 label: `usage: ${userinfo.usage} ${userinfo.unit}`,
+    //                 enabled: false,
+    //             },
+    //             { type: 'separator' },
+    //             {
+    //                 label: 'Deauthorize',
+    //                 async click(): Promise<void> {
+    //                     console.log('asdf');
+    //                 },
+    //             },
+    //         ],
+    //     });
+    // } else {
+    //     template.unshift({
+    //         label: 'Authenticate Drive',
+    //         icon: Assets.getNativeImage('images/drive.png'),
+    //         async click(): Promise<void> {
+    //             await auth.authenticate();
+    //         },
+    //     });
+    // }
 
 //     const tray = new TrayIcon(template);
 //     const watcher = new Watcher(tray);

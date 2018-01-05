@@ -4,8 +4,8 @@ import { inject, injectable } from 'inversify';
 import { Observable, Subject } from 'rxjs';
 
 import { JsonConfig } from '../config/json-config';
-import { Drive } from '../google/drive';
-import { iocSymbols } from '../ioc';
+import DriveApi from '../google/drive-api';
+import iocSymbols from '../ioc-symbols';
 import { AuthToken } from './auth-token';
 
 const opn = require('opn');
@@ -49,7 +49,7 @@ export default class Authentication {
     }
 
     constructor(
-        @inject(iocSymbols.drive) private readonly drive: Drive,
+        @inject(iocSymbols.drive) private readonly drive: DriveApi,
         @inject(iocSymbols.config) private readonly config: JsonConfig,
     ) { }
 

@@ -5,7 +5,7 @@ import { join } from 'path';
 @injectable()
 export default class Assets {
     public getAssetPath(asset: string): string {
-        return join(__dirname, 'assets', ...asset.split('/'));
+        return join(__dirname, ...asset.split('/'));
     }
 
     public getNativeImage(imagePath: string, isTemplate: boolean = false): NativeImage {

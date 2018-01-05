@@ -3,29 +3,28 @@ import 'reflect-metadata';
 import { Container } from 'inversify';
 import { platform } from 'os';
 
-import App from './app';
 import Assets from './assets';
+import Authentication from './authentication';
 import jsonConfig, { JsonConfig } from './config/json-config';
-import drive, { Drive } from './google/drive';
+import DriveShots from './drive-shots';
+import drive from './google/drive';
+import DriveApi from './google/drive-api';
+import iocSymbols from './ioc-symbols';
+import TrayIcon from './menu/tray-icon';
 import AutoUpdater from './utils/auto-updater';
-
-export const iocSymbols = {
-    config: Symbol('config'),
-    drive: Symbol('drive'),
-};
 
 const ioc = new Container();
 
 // General bindings
 
-ioc.bind(App).to(App).inSingletonScope();
-ioc.bind(Assets).to(Assets);
-ioc.bind<Drive>(iocSymbols.drive).toConstantValue(drive);
-ioc.bind(AutoUpdater).to(AutoUpdater).inSingletonScope();
+ioc.bind<DriveShots>(iocSymbols.driveShots).to(DriveShots).inSingletonScope();
+ioc.bind<Assets>(iocSymbols.assets).to(Assets);
+ioc.bind<DriveApi>(iocSymbols.drive).toConstantValue(drive);
+ioc.bind<AutoUpdater>(iocSymbols.autoUpdater).to(AutoUpdater).inSingletonScope();
 ioc.bind<JsonConfig>(iocSymbols.config).toConstantValue(jsonConfig);
+ioc.bind<Authentication>(iocSymbols.authentication).to(Authentication).inSingletonScope();
+ioc.bind<TrayIcon>(iocSymbols.trayIcon).to(TrayIcon).inSingletonScope();
 // Logger
-// Auth
-// Drive
 
 // Windows bindings
 
