@@ -2,7 +2,7 @@
   "name": "drive-shots",
   "version": "0.0.0-development",
   "description": "electron app that works with google drive to save screenshots and copy shortened url into the clipboard",
-  "main": "build/main.js",
+  "main": "build/index.js",
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
@@ -65,7 +65,7 @@
   },
   "dependencies": {
     "chokidar": "^2.0.0",
-    "electron-json-config": "^1.5.0",
+    "electron-settings": "^3.1.4",
     "electron-updater": "^2.18.2",
     "googleapis": "^23.0.0",
     "inversify": "^4.9.0",
@@ -84,7 +84,7 @@
     "@types/node": "^7",
     "cp-cli": "^1.1.0",
     "del-cli": "^1.1.0",
-    "electron": "^1.7.9",
+    "electron": "^1.7.10",
     "electron-builder": "^19.48.3",
     "jest": "^21.2.1",
     "semantic-release": "^12.1.0",
