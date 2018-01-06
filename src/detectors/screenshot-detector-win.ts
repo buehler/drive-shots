@@ -1,7 +1,8 @@
-import { readFile } from 'fs';
 import { FSWatcher, watch } from 'chokidar';
 import { app, clipboard, NativeImage } from 'electron';
+import { readFile } from 'fs';
 import { inject, injectable } from 'inversify';
+import { join } from 'path';
 import { Observable, Subject } from 'rxjs';
 
 import Authentication from '../authentication';
@@ -9,7 +10,7 @@ import iocSymbols from '../ioc-symbols';
 import Screenshot from './Screenshot';
 import ScreenshotDetector from './screenshot-detector';
 
-const WATCH_PATH = `${app.getPath('pictures')}/Screenshots/*`;
+const WATCH_PATH = join(app.getPath('pictures'), 'Screenshots');
 
 @injectable()
 export default class ScreenshotDetectorWin implements ScreenshotDetector {
