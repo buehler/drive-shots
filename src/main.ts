@@ -1,4 +1,3 @@
-import 'electron-json-config';
 import 'reflect-metadata';
 
 import DriveShots from './drive-shots';

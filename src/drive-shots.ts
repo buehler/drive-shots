@@ -21,12 +21,10 @@ export default class DriveShots {
     public start(): void {
         app.dock && app.dock.hide();
 
-        app.on('ready', () => {
-            this.updater.start();
-            this.tray.setup();
-            this.detector.setup();
-            this.uploader.setup();
-            this.auth.checkAuthentication();
-        });
+        this.updater.start();
+        this.tray.setup();
+        this.detector.setup();
+        this.uploader.setup();
+        this.auth.checkAuthentication();
     }
 }
