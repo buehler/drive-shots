@@ -19,7 +19,7 @@ export default class DriveShots {
     ) { }
 
     public start(): void {
-        app.dock.hide();
+        app.dock && app.dock.hide();
 
         app.on('ready', () => {
             this.updater.start();
