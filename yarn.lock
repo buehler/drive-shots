@@ -3123,10 +3123,6 @@ ltcdr@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/ltcdr/-/ltcdr-2.2.1.tgz#5ab87ad1d4c1dab8e8c08bbf037ee0c1902287cf"
 
-magic-number@^0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/magic-number/-/magic-number-0.1.6.tgz#fd274e220f49f0d52e69b9ed0cc5d81504f0b6d1"
-
 make-dir@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-1.1.0.tgz#19b4369fe48c116f53c2af95ad102c0e39e85d51"

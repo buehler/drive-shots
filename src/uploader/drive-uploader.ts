@@ -1,13 +1,15 @@
 import { randomBytes } from 'crypto';
 import { clipboard, Notification } from 'electron';
-import { createReadStream, unlinkSync } from 'fs';
+import { existsSync, unlinkSync } from 'fs';
 import { inject, injectable } from 'inversify';
 import * as moment from 'moment';
 import { parse } from 'path';
 import { Observable } from 'rxjs';
+import { Duplex } from 'stream';
 
 import Authentication from '../authentication';
 import { JsonConfig } from '../config/json-config';
+import Screenshot from '../detectors/Screenshot';
 import ScreenshotDetector from '../detectors/screenshot-detector';
 import DriveApi from '../google/drive-api';
 import UrlshortenerApi from '../google/urlshortener-api';
@@ -38,7 +40,7 @@ export default class DriveUploader {
         ).subscribe(data => this.upload(data));
     }
 
-    private async upload([authenticated, path]: [boolean, string]): Promise<void> {
+    private async upload([authenticated, screenshot]: [boolean, Screenshot]): Promise<void> {
         if (!authenticated) {
             delete this.folderId;
             return;
@@ -72,7 +74,7 @@ export default class DriveUploader {
         }
 
         this.icon.state = TrayIconState.Syncing;
-        const image = await this.uploadToFolder(path);
+        const image = await this.uploadToFolder(screenshot);
         const sharedImage = await this.shareFile(image);
         this.icon.state = TrayIconState.Idle;
 
@@ -81,7 +83,10 @@ export default class DriveUploader {
         this.config.set('shared-images', images.slice(0, 5));
 
         clipboard.writeText(sharedImage.url);
-        unlinkSync(path);
+
+        if (existsSync(screenshot.path)) {
+            unlinkSync(screenshot.path);
+        }
 
         const notification = new Notification({
             title: 'Screenshot uploaded',
@@ -93,17 +98,22 @@ export default class DriveUploader {
         this.icon.buildContextMenu(authenticated);
     }
 
-    private async uploadToFolder(path: string): Promise<DriveShotsImage> {
+    private async uploadToFolder(screenshot: Screenshot): Promise<DriveShotsImage> {
         const resource = {
-            name: `${moment().format('YYYY-MM-DDTHH:mm:ss')}-${randomBytes(4).toString('hex')}${parse(path).ext}`,
+            name: `${moment().format('YYYY-MM-DDTHH:mm:ss')}-${randomBytes(4).toString('hex')}${parse(screenshot.path).ext}`,
             appProperties: {
                 'drive-shots': 'drive-shots-image',
             },
             parents: [this.folderId],
         };
+
+        const stream = new Duplex();
+        stream.push(screenshot.data);
+        stream.push(null);
+
         const media = {
-            mimeType: mime.getType(path),
-            body: createReadStream(path),
+            mimeType: mime.getType(screenshot.path),
+            body: stream,
         };
 
         const file = await this.drive.files.create({
