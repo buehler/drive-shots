@@ -108,6 +108,10 @@ export default class Authentication {
                 }
 
                 const code = (params.find(p => p.indexOf('code') >= 0) || [])[1];
+                if (!code) {
+                    response.end();
+                    return;
+                }
                 oauth.getToken(code, (err, token) => {
                     if (err) {
                         reject(err);
