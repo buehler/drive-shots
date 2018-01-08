@@ -9,6 +9,7 @@ import iocSymbols from '../ioc-symbols';
 import { DriveShotsSharedImage } from '../models/drive-shots-image';
 
 const opn = require('opn');
+const autoLaunch = require('auto-launch');
 
 export const enum TrayIconState {
     Idle,
@@ -62,6 +63,26 @@ export default class TrayIcon {
 
     public async buildContextMenu(authenticated: boolean): Promise<void> {
         const template: MenuItemConstructorOptions[] = [
+            { type: 'separator' },
+            {
+                label: 'Autostart app on login',
+                type: 'checkbox',
+                checked: this.config.get('autostart.enabled', false),
+                click: async () => {
+                    const enabled = this.config.get('autostart.enabled', false);
+                    this.config.set('autostart.enabled', !enabled);
+                    const autoLauncher = new autoLaunch({ name: 'Drive Shots' });
+
+                    const isEnabled = await autoLauncher.isEnabled();
+
+                    if (!isEnabled && !enabled) {
+                        autoLauncher.enable();
+                    }
+                    if (isEnabled && enabled) {
+                        autoLauncher.disable();
+                    }
+                },
+            },
             { type: 'separator' },
             { label: 'Quit', click: () => { app.quit(); } },
         ];
