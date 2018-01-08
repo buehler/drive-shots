@@ -8,6 +8,7 @@ import Authentication from './authentication';
 import jsonConfig, { JsonConfig } from './config/json-config';
 import ScreenshotDetector from './detectors/screenshot-detector';
 import ScreenshotDetectorMacos from './detectors/screenshot-detector-macos';
+import ScreenshotDetectorWin from './detectors/screenshot-detector-win';
 import DriveShots from './drive-shots';
 import drive from './google/drive';
 import DriveApi from './google/drive-api';
@@ -36,7 +37,7 @@ ioc.bind<DriveUploader>(iocSymbols.uploader).to(DriveUploader).inSingletonScope(
 // Windows bindings
 
 if (platform() === 'win32') {
-    console.log('windows');
+    ioc.bind<ScreenshotDetector>(iocSymbols.screenshotDetector).to(ScreenshotDetectorWin).inSingletonScope();
 }
 
 // OSX bindings

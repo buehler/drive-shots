@@ -1,4 +1,4 @@
-const jsonConfig: JsonConfig = require('electron-json-config');
+const jsonConfig: JsonConfig = require('electron-settings');
 
 export interface JsonConfig {
     has(key: string): boolean;
