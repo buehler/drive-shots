@@ -2,6 +2,7 @@ import { FSWatcher, watch } from 'chokidar';
 import { app } from 'electron';
 import { readFile } from 'fs';
 import { inject, injectable } from 'inversify';
+import { join } from 'path';
 import { Observable, Subject } from 'rxjs';
 
 import Authentication from '../authentication/index';
@@ -9,7 +10,7 @@ import iocSymbols from '../ioc-symbols';
 import Screenshot from './Screenshot';
 import ScreenshotDetector from './screenshot-detector';
 
-const WATCH_PATH = `${app.getPath('desktop')}/Screen Shot*.png`;
+const WATCH_PATH = join(app.getPath('desktop'), 'Screen Shot*.png');
 
 @injectable()
 export default class ScreenshotDetectorMacos implements ScreenshotDetector {

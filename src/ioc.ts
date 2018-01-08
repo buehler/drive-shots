@@ -7,6 +7,7 @@ import Assets from './assets';
 import Authentication from './authentication';
 import jsonConfig, { JsonConfig } from './config/json-config';
 import ScreenshotDetector from './detectors/screenshot-detector';
+import ScreenshotDetectorLinux from './detectors/screenshot-detector-linux';
 import ScreenshotDetectorMacos from './detectors/screenshot-detector-macos';
 import ScreenshotDetectorWin from './detectors/screenshot-detector-win';
 import DriveShots from './drive-shots';
@@ -49,7 +50,7 @@ if (platform() === 'darwin') {
 // Linux bindings
 
 if (platform() === 'linux') {
-    console.log('linux');
+    ioc.bind<ScreenshotDetector>(iocSymbols.screenshotDetector).to(ScreenshotDetectorLinux).inSingletonScope();
 }
 
 export default ioc;
