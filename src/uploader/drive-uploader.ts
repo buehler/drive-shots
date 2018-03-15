@@ -54,7 +54,7 @@ export default class DriveUploader {
                 },
             );
 
-            if (body.files.length <= 0) {
+            if (body.data.files.length <= 0) {
                 const folder = await this.drive.files.create(
                     {
                         resource: {
@@ -67,9 +67,9 @@ export default class DriveUploader {
                         fields: 'id',
                     },
                 );
-                this.folderId = folder.id;
+                this.folderId = folder.data.id;
             } else {
-                this.folderId = body.files[0].id;
+                this.folderId = body.data.files[0].id;
             }
         }
 
@@ -80,7 +80,7 @@ export default class DriveUploader {
 
         const images = this.config.get('shared-images', [] as DriveShotsSharedImage[]);
         images.unshift(sharedImage);
-        this.config.set('shared-images', images.slice(0, 5));
+        this.config.set('shared-images', images.slice(0, 10));
 
         clipboard.writeText(sharedImage.url);
 
@@ -100,7 +100,7 @@ export default class DriveUploader {
 
     private async uploadToFolder(screenshot: Screenshot): Promise<DriveShotsImage> {
         const resource = {
-            name: `${moment().format('YYYY-MM-DDTHH:mm:ss')}-${randomBytes(4).toString('hex')}${parse(screenshot.path).ext}`,
+            name: `${moment().format('YYYY-MM-DDTHH-mm-ss')}_${randomBytes(4).toString('hex')}${parse(screenshot.path).ext}`,
             appProperties: {
                 'drive-shots': 'drive-shots-image',
             },
@@ -124,7 +124,7 @@ export default class DriveUploader {
 
         return {
             name: resource.name,
-            id: file.id,
+            id: file.data.id,
         };
     }
 
@@ -148,13 +148,23 @@ export default class DriveUploader {
         const short = await this.urlShortener.url.insert(
             {
                 resource: {
-                    longUrl: file.webViewLink,
+                    longUrl: file.data.webViewLink,
+                },
+            },
+        );
+        await this.drive.files.update(
+            {
+                fileId: image.id,
+                resource: {
+                    appProperties: {
+                        'short-url': short.data.id,
+                    },
                 },
             },
         );
         return {
             ...image,
-            url: short.id,
+            url: short.data.id,
         };
     }
 }
