@@ -152,6 +152,16 @@ export default class DriveUploader {
                 },
             },
         );
+        await this.drive.files.update(
+            {
+                fileId: image.id,
+                resource: {
+                    appProperties: {
+                        'short-url': short.id,
+                    },
+                },
+            },
+        );
         return {
             ...image,
             url: short.id,
