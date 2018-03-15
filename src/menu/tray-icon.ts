@@ -7,6 +7,7 @@ import { JsonConfig } from '../config/json-config';
 import DriveApi from '../google/drive-api';
 import iocSymbols from '../ioc-symbols';
 import { DriveShotsSharedImage } from '../models/drive-shots-image';
+import AppFolderOpener from './app-folder-opener';
 
 const opn = require('opn');
 const autoLaunch = require('auto-launch');
@@ -44,6 +45,7 @@ export default class TrayIcon {
         @inject(iocSymbols.authentication) private readonly authentication: Authentication,
         @inject(iocSymbols.drive) private readonly drive: DriveApi,
         @inject(iocSymbols.config) private readonly config: JsonConfig,
+        @inject(iocSymbols.appFolderOpener) private readonly opener: AppFolderOpener,
     ) {
         if (!TrayIcon.idleIcon) {
             TrayIcon.idleIcon = assets.getNativeImage('icons/tray-drive-shots.png', true);
@@ -62,7 +64,7 @@ export default class TrayIcon {
     }
 
     public async buildContextMenu(authenticated: boolean): Promise<void> {
-        const template: MenuItemConstructorOptions[] = [
+        let template: MenuItemConstructorOptions[] = [
             { type: 'separator' },
             {
                 label: 'Autostart app on login',
@@ -92,40 +94,52 @@ export default class TrayIcon {
             const usage = userinfo.storageQuota.usage / 1024 / 1024 / 1024;
 
             const images = this.config.get('shared-images', [] as DriveShotsSharedImage[]);
-            template.unshift({
-                label: 'History',
-                type: 'submenu',
-                submenu: images.map(image => ({
-                    label: image.name,
-                    click: () => {
-                        opn(image.url);
-                        clipboard.writeText(image.url);
-                    },
-                })),
-            });
 
-            template.unshift({
-                label: userinfo.user.displayName,
-                icon: this.assets.getNativeImage('images/drive.png'),
-                type: 'submenu',
-                submenu: [
-                    {
-                        label: `usage: ${Math.round(usage * 100) / 100} GB`,
-                        enabled: false,
-                    },
-                    { type: 'separator' },
-                    {
-                        label: 'Deauthorize',
-                        click: () => this.authentication.deauthorize(),
-                    },
-                ],
-            });
+            template = [
+                {
+                    label: userinfo.user.displayName,
+                    icon: this.assets.getNativeImage('images/drive.png'),
+                    type: 'submenu',
+                    submenu: [
+                        {
+                            label: `usage: ${Math.round(usage * 100) / 100} GB`,
+                            enabled: false,
+                        },
+                        { type: 'separator' },
+                        {
+                            label: 'Deauthorize',
+                            click: () => this.authentication.deauthorize(),
+                        },
+                    ],
+                },
+                {
+                    label: 'History',
+                    type: 'submenu',
+                    submenu: images.map(image => ({
+                        label: image.name,
+                        click: () => {
+                            opn(image.url);
+                            clipboard.writeText(image.url);
+                        },
+                    })),
+                },
+                { type: 'separator' },
+                {
+                    label: 'Open folder in browser',
+                    type: 'normal',
+                    click: () => this.opener.openAppFolder(),
+                },
+                ...template,
+            ];
         } else {
-            template.unshift({
-                label: 'Authenticate Drive',
-                icon: this.assets.getNativeImage('images/drive.png'),
-                click: () => this.authentication.authenticate(),
-            });
+            template = [
+                {
+                    label: 'Authenticate Drive',
+                    icon: this.assets.getNativeImage('images/drive.png'),
+                    click: () => this.authentication.authenticate(),
+                },
+                ...template,
+            ];
         }
 
         const context = Menu.buildFromTemplate(template);

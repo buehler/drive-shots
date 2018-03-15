@@ -17,6 +17,7 @@ import urlshortener from './google/urlshortener';
 import UrlshortenerApi from './google/urlshortener-api';
 import HistoryDetector from './history/history-detector';
 import iocSymbols from './ioc-symbols';
+import AppFolderOpener from './menu/app-folder-opener';
 import TrayIcon from './menu/tray-icon';
 import DriveUploader from './uploader/drive-uploader';
 import AutoUpdater from './utils/auto-updater';
@@ -35,6 +36,7 @@ ioc.bind<Authentication>(iocSymbols.authentication).to(Authentication).inSinglet
 ioc.bind<TrayIcon>(iocSymbols.trayIcon).to(TrayIcon).inSingletonScope();
 ioc.bind<DriveUploader>(iocSymbols.uploader).to(DriveUploader).inSingletonScope();
 ioc.bind<HistoryDetector>(iocSymbols.historyDetector).to(HistoryDetector).inSingletonScope();
+ioc.bind<AppFolderOpener>(iocSymbols.appFolderOpener).to(AppFolderOpener).inSingletonScope();
 
 // Logger
 
