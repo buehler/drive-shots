@@ -100,7 +100,7 @@ export default class DriveUploader {
 
     private async uploadToFolder(screenshot: Screenshot): Promise<DriveShotsImage> {
         const resource = {
-            name: `${moment().format('YYYY-MM-DDTHH:mm:ss')}-${randomBytes(4).toString('hex')}${parse(screenshot.path).ext}`,
+            name: `${moment().format('YYYY-MM-DDTHH-mm-ss')}_${randomBytes(4).toString('hex')}${parse(screenshot.path).ext}`,
             appProperties: {
                 'drive-shots': 'drive-shots-image',
             },
