@@ -19,8 +19,8 @@ export default class AppFolderOpener {
                 fields: 'files(webViewLink)',
             },
         );
-        if (body && body.files.length) {
-            opn(body.files[0].webViewLink);
+        if (body && body.data.files.length) {
+            opn(body.data.files[0].webViewLink);
         }
     }
 }
