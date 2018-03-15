@@ -33,6 +33,7 @@ ioc.bind<JsonConfig>(iocSymbols.config).toConstantValue(jsonConfig);
 ioc.bind<Authentication>(iocSymbols.authentication).to(Authentication).inSingletonScope();
 ioc.bind<TrayIcon>(iocSymbols.trayIcon).to(TrayIcon).inSingletonScope();
 ioc.bind<DriveUploader>(iocSymbols.uploader).to(DriveUploader).inSingletonScope();
+
 // Logger
 
 // Windows bindings
