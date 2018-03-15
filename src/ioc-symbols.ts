@@ -1,4 +1,5 @@
 export default {
+    appFolderOpener: Symbol('appFolderOpener'),
     assets: Symbol('assets'),
     autoUpdater: Symbol('autoUpdater'),
     authentication: Symbol('authentication'),
