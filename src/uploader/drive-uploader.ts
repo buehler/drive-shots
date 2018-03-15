@@ -54,7 +54,7 @@ export default class DriveUploader {
                 },
             );
 
-            if (body.files.length <= 0) {
+            if (body.data.files.length <= 0) {
                 const folder = await this.drive.files.create(
                     {
                         resource: {
@@ -67,9 +67,9 @@ export default class DriveUploader {
                         fields: 'id',
                     },
                 );
-                this.folderId = folder.id;
+                this.folderId = folder.data.id;
             } else {
-                this.folderId = body.files[0].id;
+                this.folderId = body.data.files[0].id;
             }
         }
 
@@ -124,7 +124,7 @@ export default class DriveUploader {
 
         return {
             name: resource.name,
-            id: file.id,
+            id: file.data.id,
         };
     }
 
@@ -148,7 +148,7 @@ export default class DriveUploader {
         const short = await this.urlShortener.url.insert(
             {
                 resource: {
-                    longUrl: file.webViewLink,
+                    longUrl: file.data.webViewLink,
                 },
             },
         );
@@ -157,14 +157,14 @@ export default class DriveUploader {
                 fileId: image.id,
                 resource: {
                     appProperties: {
-                        'short-url': short.id,
+                        'short-url': short.data.id,
                     },
                 },
             },
         );
         return {
             ...image,
-            url: short.id,
+            url: short.data.id,
         };
     }
 }

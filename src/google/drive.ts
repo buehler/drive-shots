@@ -1,7 +1,7 @@
-import googleapis = require('googleapis');
+import { google } from 'googleapis';
 
 const promisify = require('util.promisify');
-const drive = googleapis.drive('v3');
+const drive = google.drive('v3');
 
 for (const category of Object.keys(drive).filter(key => !key.startsWith('_') && key !== 'google')) {
     const obj = drive[category];

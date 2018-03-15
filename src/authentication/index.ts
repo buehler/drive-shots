@@ -1,4 +1,4 @@
-import googleapis = require('googleapis');
+import { google } from 'googleapis';
 import { createServer, IncomingMessage, Server, ServerResponse } from 'http';
 import { inject, injectable } from 'inversify';
 import { Observable, Subject } from 'rxjs';
@@ -61,12 +61,12 @@ export default class Authentication {
         }
 
         const token = this.config.get('google-auth-token') as AuthToken;
-        const auth = new googleapis.auth.OAuth2(
+        const auth = new google.auth.OAuth2(
             '848319290605-ub6c120lupp321fj1al65m9nb9cf3eul.apps.googleusercontent.com',
             '0o5sCCiYLRjSjAkgC681U67v',
         );
         auth.credentials = token;
-        googleapis.options({
+        google.options({
             auth,
         });
 
@@ -126,7 +126,7 @@ export default class Authentication {
             };
 
             const port = await this.startListener(handler);
-            oauth = new googleapis.auth.OAuth2(
+            oauth = new google.auth.OAuth2(
                 '848319290605-ub6c120lupp321fj1al65m9nb9cf3eul.apps.googleusercontent.com',
                 '0o5sCCiYLRjSjAkgC681U67v',
                 `http://127.0.0.1:${port}`,
