@@ -34,7 +34,7 @@ export default class HistoryDetector {
 
         this.config.set(
             'shared-images',
-            images.files
+            images.data.files
                 .slice(0, 10)
                 .map(googleFile => ({
                     id: googleFile.id,

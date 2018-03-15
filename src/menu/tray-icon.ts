@@ -91,13 +91,13 @@ export default class TrayIcon {
 
         if (authenticated) {
             const userinfo = await this.drive.about.get({ fields: 'user,storageQuota' });
-            const usage = userinfo.storageQuota.usage / 1024 / 1024 / 1024;
+            const usage = userinfo.data.storageQuota.usage / 1024 / 1024 / 1024;
 
             const images = this.config.get('shared-images', [] as DriveShotsSharedImage[]);
 
             template = [
                 {
-                    label: userinfo.user.displayName,
+                    label: userinfo.data.user.displayName,
                     icon: this.assets.getNativeImage('images/drive.png'),
                     type: 'submenu',
                     submenu: [
