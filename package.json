@@ -23,7 +23,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/buehler/drive-shots.git"
+    "url": "git@github.com:buehler/drive-shots.git"
   },
   "engines": {
     "node": ">=7",
@@ -58,7 +58,7 @@
     "verifyConditions": [
       "@semantic-release/github"
     ],
-    "getLastRelease": "@semantic-release/git",
+    "prepare": false,
     "publish": [
       "@semantic-release/github"
     ],
@@ -81,7 +81,6 @@
     "util.promisify": "^1.0.0"
   },
   "devDependencies": {
-    "@semantic-release/git": "^4.0.1",
     "@types/chokidar": "^1.7.5",
     "@types/jest": "^22.2.0",
     "@types/node": "^9",
