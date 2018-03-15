@@ -4,6 +4,7 @@ interface About {
 
 interface Files {
     create(params: any, options?: any): Promise<any>;
+    update(params: any, options?: any): Promise<any>;
     get(params: any, options?: any): Promise<any>;
     list(params?: any, options?: any): Promise<any>;
 }

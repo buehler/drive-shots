@@ -80,7 +80,7 @@ export default class DriveUploader {
 
         const images = this.config.get('shared-images', [] as DriveShotsSharedImage[]);
         images.unshift(sharedImage);
-        this.config.set('shared-images', images.slice(0, 5));
+        this.config.set('shared-images', images.slice(0, 10));
 
         clipboard.writeText(sharedImage.url);
 
@@ -149,6 +149,16 @@ export default class DriveUploader {
             {
                 resource: {
                     longUrl: file.webViewLink,
+                },
+            },
+        );
+        await this.drive.files.update(
+            {
+                fileId: image.id,
+                resource: {
+                    appProperties: {
+                        'short-url': short.id,
+                    },
                 },
             },
         );
