@@ -1,9 +1,10 @@
 import { randomBytes } from 'crypto';
-import { clipboard, Notification } from 'electron';
+import { clipboard } from 'electron';
 import { existsSync, unlinkSync } from 'fs';
 import { inject, injectable } from 'inversify';
 import * as moment from 'moment';
-import { parse } from 'path';
+import { notify } from 'node-notifier';
+import { join, parse } from 'path';
 import { Observable } from 'rxjs';
 import { Duplex } from 'stream';
 
@@ -88,12 +89,20 @@ export default class DriveUploader {
             unlinkSync(screenshot.path);
         }
 
-        const notification = new Notification({
-            title: 'Screenshot uploaded',
-            body: 'The URL has been copied to your clipboard',
-        });
-        notification.on('click', () => opn(sharedImage.url));
-        notification.show();
+        notify(
+            {
+                message: 'The URL has been copied to your clipboard.',
+                title: 'Screenshot uploaded',
+                icon: join(__dirname, '..', 'assets', 'images', 'icon.png'),
+                wait: true,
+            },
+            (_err, response) => {
+                // "activate" -> mac
+                if (response.indexOf('clicked') >= 0 || response.indexOf('activate') >= 0) {
+                    opn(sharedImage.url);
+                }
+            },
+        );
 
         this.icon.buildContextMenu(authenticated);
     }
