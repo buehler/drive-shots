@@ -97,7 +97,8 @@ export default class DriveUploader {
                 wait: true,
             },
             (_err, response) => {
-                if (response.indexOf('clicked') >= 0) {
+                // "activate" -> mac
+                if (response.indexOf('clicked') >= 0 || response.indexOf('activate') >= 0) {
                     opn(sharedImage.url);
                 }
             },
