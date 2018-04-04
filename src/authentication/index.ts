@@ -112,7 +112,7 @@ export default class Authentication {
                     response.end();
                     return;
                 }
-                oauth.getToken(code, (err, token) => {
+                oauth.getToken(code, (err: Error, token: AuthToken) => {
                     if (err) {
                         reject(err);
                         return;

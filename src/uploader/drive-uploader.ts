@@ -23,7 +23,7 @@ const opn = require('opn');
 
 @injectable()
 export default class DriveUploader {
-    private folderId: string;
+    private folderId: string = '';
 
     constructor(
         @inject(iocSymbols.authentication) private readonly auth: Authentication,

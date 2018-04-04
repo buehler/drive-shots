@@ -24,18 +24,18 @@ export default class TrayIcon {
     private static syncIcon: NativeImage;
     private static errorIcon: NativeImage;
 
-    public trayElement: Tray;
+    public trayElement: Tray | undefined;
 
     public set state(value: TrayIconState) {
         switch (value) {
             case TrayIconState.Error:
-                this.trayElement.setImage(TrayIcon.errorIcon);
+                this.trayElement!.setImage(TrayIcon.errorIcon);
                 break;
             case TrayIconState.Syncing:
-                this.trayElement.setImage(TrayIcon.syncIcon);
+                this.trayElement!.setImage(TrayIcon.syncIcon);
                 break;
             default:
-                this.trayElement.setImage(TrayIcon.idleIcon);
+                this.trayElement!.setImage(TrayIcon.idleIcon);
                 break;
         }
     }
@@ -143,6 +143,6 @@ export default class TrayIcon {
         }
 
         const context = Menu.buildFromTemplate(template);
-        this.trayElement.setContextMenu(context);
+        this.trayElement!.setContextMenu(context);
     }
 }

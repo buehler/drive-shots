@@ -15,14 +15,13 @@ const WATCH_PATH = join(app.getPath('pictures'), 'Screenshots');
 @injectable()
 export default class ScreenshotDetectorWin implements ScreenshotDetector {
     private _screenshotDetected: Subject<Screenshot> = new Subject();
-    private watcher: FSWatcher;
-    private interval: NodeJS.Timer;
+    private watcher: FSWatcher | undefined;
+    private interval: NodeJS.Timer | undefined;
+    private lastImage: NativeImage | undefined;
 
     public get screenshotDetected(): Observable<Screenshot> {
         return this._screenshotDetected;
     }
-
-    private lastImage: NativeImage;
 
     constructor(
         @inject(iocSymbols.authentication) private readonly auth: Authentication,

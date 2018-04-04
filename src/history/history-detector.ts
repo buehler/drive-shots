@@ -36,7 +36,7 @@ export default class HistoryDetector {
             'shared-images',
             images.data.files
                 .slice(0, 10)
-                .map(googleFile => ({
+                .map((googleFile: any) => ({
                     id: googleFile.id,
                     name: googleFile.name,
                     url: googleFile.appProperties['short-url'] || googleFile.webViewLink,
