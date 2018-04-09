@@ -55,4 +55,4 @@ if (platform() === 'linux') {
     ioc.bind<ScreenshotDetector>(iocSymbols.screenshotDetector).to(ScreenshotDetectorLinux).inSingletonScope();
 }
 
-export default ioc;
+export { ioc };

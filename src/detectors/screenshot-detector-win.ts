@@ -5,15 +5,15 @@ import { inject, injectable } from 'inversify';
 import { join } from 'path';
 import { Observable, Subject } from 'rxjs';
 
-import Authentication from '../authentication';
-import iocSymbols from '../ioc-symbols';
-import Screenshot from './Screenshot';
-import ScreenshotDetector from './screenshot-detector';
+import { Authentication } from '../authentication';
+import { iocSymbols } from '../ioc-symbols';
+import { Screenshot } from './Screenshot';
+import { ScreenshotDetector } from './screenshot-detector';
 
 const WATCH_PATH = join(app.getPath('pictures'), 'Screenshots');
 
 @injectable()
-export default class ScreenshotDetectorWin implements ScreenshotDetector {
+export class ScreenshotDetectorWin implements ScreenshotDetector {
     private _screenshotDetected: Subject<Screenshot> = new Subject();
     private watcher: FSWatcher | undefined;
     private interval: NodeJS.Timer | undefined;

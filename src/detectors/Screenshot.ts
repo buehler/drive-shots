@@ -1,4 +1,4 @@
-export default interface Screenshot {
+export interface Screenshot {
     path: string;
     data: Buffer;
 }

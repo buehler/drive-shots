@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs';
 
-import Screenshot from './Screenshot';
+import { Screenshot } from './Screenshot';
 
-export default interface ScreenshotDetector {
+export interface ScreenshotDetector {
     readonly screenshotDetected: Observable<Screenshot>;
     setup(): void | Promise<void>;
 }
