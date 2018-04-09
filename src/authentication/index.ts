@@ -6,7 +6,7 @@ import { Observable, Subject } from 'rxjs';
 import { parse } from 'url';
 
 import { JsonConfig } from '../config/json-config';
-import iocSymbols from '../ioc-symbols';
+import { iocSymbols } from '../ioc-symbols';
 import { AuthToken } from './auth-token';
 
 const opn = require('opn');
@@ -41,7 +41,7 @@ const html = `
 `;
 
 @injectable()
-export default class Authentication {
+export class Authentication {
     private _authenticationChanged: Subject<boolean> = new Subject();
     private server?: Server;
 

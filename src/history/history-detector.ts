@@ -1,13 +1,13 @@
 import { Drive } from 'googleapis/build/src/apis/drive/v3';
 import { inject, injectable } from 'inversify';
 
-import Authentication from '../authentication';
+import { Authentication } from '../authentication';
 import { JsonConfig } from '../config/json-config';
-import iocSymbols from '../ioc-symbols';
-import TrayIcon from '../menu/tray-icon';
+import { iocSymbols } from '../ioc-symbols';
+import { TrayIcon } from '../menu/tray-icon';
 
 @injectable()
-export default class HistoryDetector {
+export class HistoryDetector {
     constructor(
         @inject(iocSymbols.authentication) private readonly authentication: Authentication,
         @inject(iocSymbols.drive) private readonly drive: Drive,

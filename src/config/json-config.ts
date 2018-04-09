@@ -7,4 +7,4 @@ export interface JsonConfig {
     delete(key: string): void;
 }
 
-export default jsonConfig;
+export { jsonConfig };

@@ -5,20 +5,20 @@ import { Drive } from 'googleapis/build/src/apis/drive/v3';
 import { Container } from 'inversify';
 import { platform } from 'os';
 
-import Assets from './assets';
-import Authentication from './authentication';
-import jsonConfig, { JsonConfig } from './config/json-config';
-import ScreenshotDetector from './detectors/screenshot-detector';
-import ScreenshotDetectorLinux from './detectors/screenshot-detector-linux';
-import ScreenshotDetectorMacos from './detectors/screenshot-detector-macos';
-import ScreenshotDetectorWin from './detectors/screenshot-detector-win';
-import DriveShots from './drive-shots';
-import HistoryDetector from './history/history-detector';
-import iocSymbols from './ioc-symbols';
-import AppFolderOpener from './menu/app-folder-opener';
-import TrayIcon from './menu/tray-icon';
-import DriveUploader from './uploader/drive-uploader';
-import AutoUpdater from './utils/auto-updater';
+import { Assets } from './assets';
+import { Authentication } from './authentication';
+import { JsonConfig, jsonConfig } from './config/json-config';
+import { ScreenshotDetector } from './detectors/screenshot-detector';
+import { ScreenshotDetectorLinux } from './detectors/screenshot-detector-linux';
+import { ScreenshotDetectorMacos } from './detectors/screenshot-detector-macos';
+import { ScreenshotDetectorWin } from './detectors/screenshot-detector-win';
+import { DriveShots } from './drive-shots';
+import { HistoryDetector } from './history/history-detector';
+import { iocSymbols } from './ioc-symbols';
+import { AppFolderOpener } from './menu/app-folder-opener';
+import { TrayIcon } from './menu/tray-icon';
+import { DriveUploader } from './uploader/drive-uploader';
+import { AutoUpdater } from './utils/auto-updater';
 
 const ioc = new Container();
 
@@ -55,4 +55,4 @@ if (platform() === 'linux') {
     ioc.bind<ScreenshotDetector>(iocSymbols.screenshotDetector).to(ScreenshotDetectorLinux).inSingletonScope();
 }
 
-export default ioc;
+export { ioc };

@@ -3,7 +3,7 @@ import { injectable } from 'inversify';
 import { join } from 'path';
 
 @injectable()
-export default class Assets {
+export class Assets {
     public getAssetPath(asset: string): string {
         return join(__dirname, 'assets', ...asset.split('/'));
     }

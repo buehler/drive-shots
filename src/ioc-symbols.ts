@@ -1,4 +1,4 @@
-export default {
+export const iocSymbols = {
     appFolderOpener: Symbol('appFolderOpener'),
     assets: Symbol('assets'),
     autoUpdater: Symbol('autoUpdater'),

@@ -2,7 +2,7 @@ import { autoUpdater } from 'electron-updater';
 import { injectable } from 'inversify';
 
 @injectable()
-export default class AutoUpdater {
+export class AutoUpdater {
     private interval: NodeJS.Timer | undefined;
 
     public start(): void {
