@@ -1,16 +1,16 @@
 import { app } from 'electron';
 import { inject, injectable } from 'inversify';
 
-import Authentication from './authentication';
-import ScreenshotDetector from './detectors/screenshot-detector';
-import HistoryDetector from './history/history-detector';
-import iocSymbols from './ioc-symbols';
-import TrayIcon from './menu/tray-icon';
-import DriveUploader from './uploader/drive-uploader';
-import AutoUpdater from './utils/auto-updater';
+import { Authentication } from './authentication';
+import { ScreenshotDetector } from './detectors/screenshot-detector';
+import { HistoryDetector } from './history/history-detector';
+import { iocSymbols } from './ioc-symbols';
+import { TrayIcon } from './menu/tray-icon';
+import { DriveUploader } from './uploader/drive-uploader';
+import { AutoUpdater } from './utils/auto-updater';
 
 @injectable()
-export default class DriveShots {
+export class DriveShots {
     constructor(
         @inject(iocSymbols.autoUpdater) private updater: AutoUpdater,
         @inject(iocSymbols.authentication) private auth: Authentication,

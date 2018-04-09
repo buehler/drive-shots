@@ -1,16 +1,16 @@
+import { Drive } from 'googleapis/build/src/apis/drive/v3';
 import { inject, injectable } from 'inversify';
 
-import Authentication from '../authentication';
+import { Authentication } from '../authentication';
 import { JsonConfig } from '../config/json-config';
-import DriveApi from '../google/drive-api';
-import iocSymbols from '../ioc-symbols';
-import TrayIcon from '../menu/tray-icon';
+import { iocSymbols } from '../ioc-symbols';
+import { TrayIcon } from '../menu/tray-icon';
 
 @injectable()
-export default class HistoryDetector {
+export class HistoryDetector {
     constructor(
         @inject(iocSymbols.authentication) private readonly authentication: Authentication,
-        @inject(iocSymbols.drive) private readonly drive: DriveApi,
+        @inject(iocSymbols.drive) private readonly drive: Drive,
         @inject(iocSymbols.config) private readonly config: JsonConfig,
         @inject(iocSymbols.trayIcon) private readonly trayIcon: TrayIcon,
     ) { }
@@ -36,7 +36,7 @@ export default class HistoryDetector {
             'shared-images',
             images.data.files
                 .slice(0, 10)
-                .map(googleFile => ({
+                .map((googleFile: any) => ({
                     id: googleFile.id,
                     name: googleFile.name,
                     url: googleFile.appProperties['short-url'] || googleFile.webViewLink,

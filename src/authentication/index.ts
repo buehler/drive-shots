@@ -1,12 +1,12 @@
 import { google } from 'googleapis';
+import { Drive } from 'googleapis/build/src/apis/drive/v3';
 import { createServer, IncomingMessage, Server, ServerResponse } from 'http';
 import { inject, injectable } from 'inversify';
 import { Observable, Subject } from 'rxjs';
 import { parse } from 'url';
 
 import { JsonConfig } from '../config/json-config';
-import DriveApi from '../google/drive-api';
-import iocSymbols from '../ioc-symbols';
+import { iocSymbols } from '../ioc-symbols';
 import { AuthToken } from './auth-token';
 
 const opn = require('opn');
@@ -41,7 +41,7 @@ const html = `
 `;
 
 @injectable()
-export default class Authentication {
+export class Authentication {
     private _authenticationChanged: Subject<boolean> = new Subject();
     private server?: Server;
 
@@ -50,7 +50,7 @@ export default class Authentication {
     }
 
     constructor(
-        @inject(iocSymbols.drive) private readonly drive: DriveApi,
+        @inject(iocSymbols.drive) private readonly drive: Drive,
         @inject(iocSymbols.config) private readonly config: JsonConfig,
     ) { }
 
@@ -112,7 +112,7 @@ export default class Authentication {
                     response.end();
                     return;
                 }
-                oauth.getToken(code, (err, token) => {
+                oauth.getToken(code, (err: Error, token: AuthToken) => {
                     if (err) {
                         reject(err);
                         return;

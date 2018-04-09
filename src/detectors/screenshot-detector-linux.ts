@@ -5,24 +5,23 @@ import { inject, injectable } from 'inversify';
 import { join } from 'path';
 import { Observable, Subject } from 'rxjs';
 
-import Authentication from '../authentication';
-import iocSymbols from '../ioc-symbols';
-import Screenshot from './Screenshot';
-import ScreenshotDetector from './screenshot-detector';
+import { Authentication } from '../authentication';
+import { iocSymbols } from '../ioc-symbols';
+import { Screenshot } from './Screenshot';
+import { ScreenshotDetector } from './screenshot-detector';
 
 const WATCH_PATH = join(app.getPath('pictures'), 'Screenshot*.png');
 
 @injectable()
-export default class ScreenshotDetectorLinux implements ScreenshotDetector {
+export class ScreenshotDetectorLinux implements ScreenshotDetector {
     private _screenshotDetected: Subject<Screenshot> = new Subject();
-    private watcher: FSWatcher;
-    private interval: NodeJS.Timer;
+    private watcher: FSWatcher | undefined;
+    private interval: NodeJS.Timer | undefined;
+    private lastImage: NativeImage | undefined;
 
     public get screenshotDetected(): Observable<Screenshot> {
         return this._screenshotDetected;
     }
-
-    private lastImage: NativeImage;
 
     constructor(
         @inject(iocSymbols.authentication) private readonly auth: Authentication,
