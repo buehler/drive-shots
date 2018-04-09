@@ -1,6 +1,6 @@
+import { Drive } from 'googleapis/build/src/apis/drive/v3';
 import { inject, injectable } from 'inversify';
 
-import DriveApi from '../google/drive-api';
 import iocSymbols from '../ioc-symbols';
 
 const opn = require('opn');
@@ -8,7 +8,7 @@ const opn = require('opn');
 @injectable()
 export default class AppFolderOpener {
     constructor(
-        @inject(iocSymbols.drive) private readonly drive: DriveApi,
+        @inject(iocSymbols.drive) private readonly drive: Drive,
     ) { }
 
     public async openAppFolder(): Promise<void> {

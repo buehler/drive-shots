@@ -6,9 +6,9 @@
 [![GitHub release](https://img.shields.io/github/release/buehler/drive-shots.svg)](https://github.com/buehler/drive-shots/releases/latest)
 
 Small neat electron app, that takes screenshots, and uploads them to your google drive. After they are uploaded,
-the url is shortened (via goo.gl) and then copied to your clipboard.
+the url is shortened (via firebase dynamic links) and then copied to your clipboard.
 
-The app has the capabilities to autostart and does provide a small history of the 5 last uploaded files.
+The app has the capabilities to autostart and does provide a small history of the 10 last uploaded files.
 
 Currently tested on:
 - Windows 10

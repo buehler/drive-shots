@@ -1,10 +1,10 @@
 import { app, clipboard, Menu, MenuItemConstructorOptions, NativeImage, Tray } from 'electron';
+import { Drive } from 'googleapis/build/src/apis/drive/v3';
 import { inject, injectable } from 'inversify';
 
 import Assets from '../assets';
 import Authentication from '../authentication';
 import { JsonConfig } from '../config/json-config';
-import DriveApi from '../google/drive-api';
 import iocSymbols from '../ioc-symbols';
 import { DriveShotsSharedImage } from '../models/drive-shots-image';
 import AppFolderOpener from './app-folder-opener';
@@ -24,18 +24,18 @@ export default class TrayIcon {
     private static syncIcon: NativeImage;
     private static errorIcon: NativeImage;
 
-    public trayElement: Tray;
+    public trayElement: Tray | undefined;
 
     public set state(value: TrayIconState) {
         switch (value) {
             case TrayIconState.Error:
-                this.trayElement.setImage(TrayIcon.errorIcon);
+                this.trayElement!.setImage(TrayIcon.errorIcon);
                 break;
             case TrayIconState.Syncing:
-                this.trayElement.setImage(TrayIcon.syncIcon);
+                this.trayElement!.setImage(TrayIcon.syncIcon);
                 break;
             default:
-                this.trayElement.setImage(TrayIcon.idleIcon);
+                this.trayElement!.setImage(TrayIcon.idleIcon);
                 break;
         }
     }
@@ -43,7 +43,7 @@ export default class TrayIcon {
     constructor(
         @inject(iocSymbols.assets) private readonly assets: Assets,
         @inject(iocSymbols.authentication) private readonly authentication: Authentication,
-        @inject(iocSymbols.drive) private readonly drive: DriveApi,
+        @inject(iocSymbols.drive) private readonly drive: Drive,
         @inject(iocSymbols.config) private readonly config: JsonConfig,
         @inject(iocSymbols.appFolderOpener) private readonly opener: AppFolderOpener,
     ) {
@@ -143,6 +143,6 @@ export default class TrayIcon {
         }
 
         const context = Menu.buildFromTemplate(template);
-        this.trayElement.setContextMenu(context);
+        this.trayElement!.setContextMenu(context);
     }
 }
