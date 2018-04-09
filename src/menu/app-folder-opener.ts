@@ -1,12 +1,12 @@
 import { Drive } from 'googleapis/build/src/apis/drive/v3';
 import { inject, injectable } from 'inversify';
 
-import iocSymbols from '../ioc-symbols';
+import { iocSymbols } from '../ioc-symbols';
 
 const opn = require('opn');
 
 @injectable()
-export default class AppFolderOpener {
+export class AppFolderOpener {
     constructor(
         @inject(iocSymbols.drive) private readonly drive: Drive,
     ) { }

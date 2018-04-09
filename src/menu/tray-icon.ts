@@ -2,12 +2,12 @@ import { app, clipboard, Menu, MenuItemConstructorOptions, NativeImage, Tray } f
 import { Drive } from 'googleapis/build/src/apis/drive/v3';
 import { inject, injectable } from 'inversify';
 
-import Assets from '../assets';
-import Authentication from '../authentication';
+import { Assets } from '../assets';
+import { Authentication } from '../authentication';
 import { JsonConfig } from '../config/json-config';
-import iocSymbols from '../ioc-symbols';
+import { iocSymbols } from '../ioc-symbols';
 import { DriveShotsSharedImage } from '../models/drive-shots-image';
-import AppFolderOpener from './app-folder-opener';
+import { AppFolderOpener } from './app-folder-opener';
 
 const opn = require('opn');
 const autoLaunch = require('auto-launch');
@@ -19,7 +19,7 @@ export const enum TrayIconState {
 }
 
 @injectable()
-export default class TrayIcon {
+export class TrayIcon {
     private static idleIcon: NativeImage;
     private static syncIcon: NativeImage;
     private static errorIcon: NativeImage;

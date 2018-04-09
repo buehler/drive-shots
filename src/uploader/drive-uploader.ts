@@ -9,19 +9,19 @@ import { join, parse } from 'path';
 import { Observable } from 'rxjs';
 import { Duplex } from 'stream';
 
-import Authentication from '../authentication';
+import { Authentication } from '../authentication';
 import { JsonConfig } from '../config/json-config';
-import Screenshot from '../detectors/Screenshot';
-import ScreenshotDetector from '../detectors/screenshot-detector';
-import iocSymbols from '../ioc-symbols';
-import TrayIcon, { TrayIconState } from '../menu/tray-icon';
+import { Screenshot } from '../detectors/Screenshot';
+import { ScreenshotDetector } from '../detectors/screenshot-detector';
+import { iocSymbols } from '../ioc-symbols';
+import { TrayIcon, TrayIconState } from '../menu/tray-icon';
 import { DriveShotsImage, DriveShotsSharedImage } from '../models/drive-shots-image';
 
 const mime = require('mime');
 const opn = require('opn');
 
 @injectable()
-export default class DriveUploader {
+export class DriveUploader {
     private folderId: string = '';
 
     constructor(
