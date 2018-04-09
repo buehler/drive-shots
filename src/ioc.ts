@@ -1,5 +1,8 @@
 import 'reflect-metadata';
 
+import { google } from 'googleapis';
+import { Drive } from 'googleapis/build/src/apis/drive/v3';
+import { Firebasedynamiclinks } from 'googleapis/build/src/apis/firebasedynamiclinks/v1';
 import { Container } from 'inversify';
 import { platform } from 'os';
 
@@ -11,10 +14,6 @@ import ScreenshotDetectorLinux from './detectors/screenshot-detector-linux';
 import ScreenshotDetectorMacos from './detectors/screenshot-detector-macos';
 import ScreenshotDetectorWin from './detectors/screenshot-detector-win';
 import DriveShots from './drive-shots';
-import drive from './google/drive';
-import DriveApi from './google/drive-api';
-import urlshortener from './google/urlshortener';
-import UrlshortenerApi from './google/urlshortener-api';
 import HistoryDetector from './history/history-detector';
 import iocSymbols from './ioc-symbols';
 import AppFolderOpener from './menu/app-folder-opener';
@@ -28,8 +27,8 @@ const ioc = new Container();
 
 ioc.bind<DriveShots>(iocSymbols.driveShots).to(DriveShots).inSingletonScope();
 ioc.bind<Assets>(iocSymbols.assets).to(Assets);
-ioc.bind<DriveApi>(iocSymbols.drive).toConstantValue(drive);
-ioc.bind<UrlshortenerApi>(iocSymbols.urlShortener).toConstantValue(urlshortener);
+ioc.bind<Drive>(iocSymbols.drive).toConstantValue(google.drive('v3'));
+ioc.bind<Firebasedynamiclinks>(iocSymbols.urlShortener).toConstantValue(google.firebasedynamiclinks('v1'));
 ioc.bind<AutoUpdater>(iocSymbols.autoUpdater).to(AutoUpdater).inSingletonScope();
 ioc.bind<JsonConfig>(iocSymbols.config).toConstantValue(jsonConfig);
 ioc.bind<Authentication>(iocSymbols.authentication).to(Authentication).inSingletonScope();
