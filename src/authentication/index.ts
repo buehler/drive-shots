@@ -1,11 +1,11 @@
 import { google } from 'googleapis';
+import { Drive } from 'googleapis/build/src/apis/drive/v3';
 import { createServer, IncomingMessage, Server, ServerResponse } from 'http';
 import { inject, injectable } from 'inversify';
 import { Observable, Subject } from 'rxjs';
 import { parse } from 'url';
 
 import { JsonConfig } from '../config/json-config';
-import DriveApi from '../google/drive-api';
 import iocSymbols from '../ioc-symbols';
 import { AuthToken } from './auth-token';
 
@@ -50,7 +50,7 @@ export default class Authentication {
     }
 
     constructor(
-        @inject(iocSymbols.drive) private readonly drive: DriveApi,
+        @inject(iocSymbols.drive) private readonly drive: Drive,
         @inject(iocSymbols.config) private readonly config: JsonConfig,
     ) { }
 

@@ -1,10 +1,10 @@
 import { app, clipboard, Menu, MenuItemConstructorOptions, NativeImage, Tray } from 'electron';
+import { Drive } from 'googleapis/build/src/apis/drive/v3';
 import { inject, injectable } from 'inversify';
 
 import Assets from '../assets';
 import Authentication from '../authentication';
 import { JsonConfig } from '../config/json-config';
-import DriveApi from '../google/drive-api';
 import iocSymbols from '../ioc-symbols';
 import { DriveShotsSharedImage } from '../models/drive-shots-image';
 import AppFolderOpener from './app-folder-opener';
@@ -43,7 +43,7 @@ export default class TrayIcon {
     constructor(
         @inject(iocSymbols.assets) private readonly assets: Assets,
         @inject(iocSymbols.authentication) private readonly authentication: Authentication,
-        @inject(iocSymbols.drive) private readonly drive: DriveApi,
+        @inject(iocSymbols.drive) private readonly drive: Drive,
         @inject(iocSymbols.config) private readonly config: JsonConfig,
         @inject(iocSymbols.appFolderOpener) private readonly opener: AppFolderOpener,
     ) {

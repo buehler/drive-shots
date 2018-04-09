@@ -2,7 +2,6 @@ import 'reflect-metadata';
 
 import { google } from 'googleapis';
 import { Drive } from 'googleapis/build/src/apis/drive/v3';
-import { Firebasedynamiclinks } from 'googleapis/build/src/apis/firebasedynamiclinks/v1';
 import { Container } from 'inversify';
 import { platform } from 'os';
 
@@ -28,7 +27,6 @@ const ioc = new Container();
 ioc.bind<DriveShots>(iocSymbols.driveShots).to(DriveShots).inSingletonScope();
 ioc.bind<Assets>(iocSymbols.assets).to(Assets);
 ioc.bind<Drive>(iocSymbols.drive).toConstantValue(google.drive('v3'));
-ioc.bind<Firebasedynamiclinks>(iocSymbols.urlShortener).toConstantValue(google.firebasedynamiclinks('v1'));
 ioc.bind<AutoUpdater>(iocSymbols.autoUpdater).to(AutoUpdater).inSingletonScope();
 ioc.bind<JsonConfig>(iocSymbols.config).toConstantValue(jsonConfig);
 ioc.bind<Authentication>(iocSymbols.authentication).to(Authentication).inSingletonScope();

@@ -1,6 +1,7 @@
 import { randomBytes } from 'crypto';
 import { clipboard } from 'electron';
 import { existsSync, unlinkSync } from 'fs';
+import { Drive } from 'googleapis/build/src/apis/drive/v3';
 import { inject, injectable } from 'inversify';
 import * as moment from 'moment';
 import { notify } from 'node-notifier';
@@ -12,8 +13,6 @@ import Authentication from '../authentication';
 import { JsonConfig } from '../config/json-config';
 import Screenshot from '../detectors/Screenshot';
 import ScreenshotDetector from '../detectors/screenshot-detector';
-import DriveApi from '../google/drive-api';
-import UrlshortenerApi from '../google/urlshortener-api';
 import iocSymbols from '../ioc-symbols';
 import TrayIcon, { TrayIconState } from '../menu/tray-icon';
 import { DriveShotsImage, DriveShotsSharedImage } from '../models/drive-shots-image';
@@ -27,8 +26,7 @@ export default class DriveUploader {
 
     constructor(
         @inject(iocSymbols.authentication) private readonly auth: Authentication,
-        @inject(iocSymbols.drive) private readonly drive: DriveApi,
-        @inject(iocSymbols.urlShortener) private readonly urlShortener: UrlshortenerApi,
+        @inject(iocSymbols.drive) private readonly drive: Drive,
         @inject(iocSymbols.screenshotDetector) private readonly detector: ScreenshotDetector,
         @inject(iocSymbols.trayIcon) private readonly icon: TrayIcon,
         @inject(iocSymbols.config) private readonly config: JsonConfig,
@@ -154,26 +152,9 @@ export default class DriveUploader {
                 fields: 'id,name,webViewLink',
             },
         );
-        const short = await this.urlShortener.url.insert(
-            {
-                resource: {
-                    longUrl: file.data.webViewLink,
-                },
-            },
-        );
-        await this.drive.files.update(
-            {
-                fileId: image.id,
-                resource: {
-                    appProperties: {
-                        'short-url': short.data.id,
-                    },
-                },
-            },
-        );
         return {
             ...image,
-            url: short.data.id,
+            url: file.data.webViewLink,
         };
     }
 }
