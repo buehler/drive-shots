@@ -10,7 +10,7 @@ import { iocSymbols } from '../ioc-symbols';
 import { Screenshot } from './Screenshot';
 import { ScreenshotDetector } from './screenshot-detector';
 
-const WATCH_PATH = join(app.getPath('desktop'), 'Screen Shot*.png');
+const WATCH_PATH = join(app.getPath('desktop'), 'Screen*.png');
 
 @injectable()
 export class ScreenshotDetectorMacos implements ScreenshotDetector {
