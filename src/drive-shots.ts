@@ -9,6 +9,5 @@ export class DriveShots {
 
   public start(): void {
     app.dock && app.dock.hide();
-    console.log(this.tray);
   }
 }
