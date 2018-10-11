@@ -1,11 +1,10 @@
 import { app } from 'electron';
 
-console.log('asdfasdf');
-async function start(): Promise<void> {
+import { startup } from './main';
+
+async function electronStart(): Promise<void> {
   await app.whenReady();
-  console.log('ye');
+  startup();
 }
 
-start()
-  .then(() => console.log('when ready'))
-  .catch(err => console.error(err));
+electronStart().catch(err => console.error(err));

@@ -76,6 +76,7 @@
     "moment": "^2.22.2",
     "opn": "^5.4.0",
     "reflect-metadata": "^0.1.12",
+    "rxjs": "^6.3.3",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
