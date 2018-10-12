@@ -5,6 +5,7 @@ import { Observable, Subject } from 'rxjs';
 import { Authenticator } from '../authentication/google-auth';
 import { JsonConfig } from '../config/json-config';
 import { IocSymbols } from '../ioc-symbols';
+import { Logger } from '../utils/logger';
 
 @injectable()
 export class HistoryDetector {
@@ -17,6 +18,7 @@ export class HistoryDetector {
   constructor(
     private readonly authenticator: Authenticator,
     private readonly drive: drive_v3.Drive,
+    private readonly logger: Logger,
     @inject(IocSymbols.config) private readonly config: JsonConfig,
   ) {
     this.authenticator.onAuthenticationChanged.subscribe(auth =>
@@ -26,6 +28,7 @@ export class HistoryDetector {
 
   private async getScreenHistory(authenticated: boolean): Promise<void> {
     if (!authenticated) {
+      this.logger.debug('HistoryDetector: not authenticated.');
       return;
     }
 
@@ -36,6 +39,7 @@ export class HistoryDetector {
     } as any);
 
     if (!images.data.files) {
+      this.logger.info('HistoryDetector: no data files found online.');
       return;
     }
 
@@ -46,6 +50,9 @@ export class HistoryDetector {
         name: googleFile.name,
         url: googleFile.appProperties['short-url'] || googleFile.webViewLink,
       })),
+    );
+    this.logger.info(
+      `HistoryDetector: Found ${images.data.files.length} files online.`,
     );
     this._onHistoryDetected.next();
   }

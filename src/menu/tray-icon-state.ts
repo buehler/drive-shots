@@ -1,4 +1,4 @@
-export const enum TrayIconState {
+export enum TrayIconState {
   idle,
   syncing,
   error,

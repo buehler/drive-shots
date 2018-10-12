@@ -17,6 +17,7 @@ import { HistoryDetector } from '../history/history-detector';
 import { IocSymbols } from '../ioc-symbols';
 import { DriveShotsSharedImage } from '../models/drive-shots-image';
 import { AutoUpdater } from '../utils/auto-updater';
+import { Logger } from '../utils/logger';
 import { AppFolderOpener } from './app-folder-opener';
 import { TrayIconState } from './tray-icon-state';
 
@@ -32,6 +33,9 @@ export class TrayMenu {
   private errorIcon: NativeImage;
 
   public set state(value: TrayIconState) {
+    this.logger.debug(
+      `TrayMenu: set new menu icon state "${TrayIconState[value]}".`,
+    );
     switch (value) {
       case TrayIconState.error:
         this.trayElement.setImage(this.errorIcon);
@@ -53,6 +57,7 @@ export class TrayMenu {
     private readonly drive: drive_v3.Drive,
     @inject(IocSymbols.config) private readonly config: JsonConfig,
     private readonly opener: AppFolderOpener,
+    private readonly logger: Logger,
   ) {
     this.idleIcon = assets.getNativeImage('icons/tray-drive-shots.png', true);
     this.syncIcon = assets.getNativeImage(
@@ -76,6 +81,9 @@ export class TrayMenu {
     authenticated: boolean,
     updateAvailable: boolean,
   ): Promise<void> {
+    this.logger.debug(
+      `TrayMenu: buildContextMenu(${authenticated}, ${updateAvailable}).`,
+    );
     this.trayElement.setContextMenu(
       Menu.buildFromTemplate([
         ...(await this.authenticatedTemplate(authenticated)),
@@ -87,6 +95,9 @@ export class TrayMenu {
           click: async () => {
             const enabled = this.config.get('autostart.enabled', false);
             this.config.set('autostart.enabled', !enabled);
+            this.logger.debug(
+              `TrayMenu: change autostart setting to "${!enabled}".`,
+            );
             const autoLauncher = new autoLaunch({ name: 'Drive Shots' });
             const isEnabled = await autoLauncher.isEnabled();
             if (!isEnabled && !enabled) {
@@ -148,6 +159,7 @@ export class TrayMenu {
         submenu: images.map(image => ({
           label: image.name,
           click: () => {
+            this.logger.debug(`TrayMenu: open item in history.`);
             opn(image.url);
             clipboard.writeText(image.url);
           },
@@ -170,6 +182,7 @@ export class TrayMenu {
         {
           label: 'Update and Restart',
           click: () => {
+            this.logger.debug(`TrayMenu: update and restart the app.`);
             app.relaunch();
             app.quit();
           },

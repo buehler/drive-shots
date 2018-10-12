@@ -1,11 +1,15 @@
 import { put, Response } from 'got';
 import { injectable } from 'inversify';
+import { Logger } from '../utils/logger';
 
 const shortenerUrl = 'https://smr.tv/api/links';
 
 @injectable()
 export class UrlShortener {
+  constructor(private readonly logger: Logger) {}
+
   public async shorten(url: string): Promise<string> {
+    this.logger.debug(`UrlShortener: get short url for "${url}".`);
     const shortUrl = (await put(shortenerUrl, {
       json: true,
       body: { url },

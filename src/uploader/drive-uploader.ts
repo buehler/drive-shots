@@ -20,6 +20,7 @@ import {
   DriveShotsSharedImage,
 } from '../models/drive-shots-image';
 import { UrlShortener } from '../url-shortener/smrtv-shortener';
+import { Logger } from '../utils/logger';
 
 const mime = require('mime');
 const opn = require('opn');
@@ -34,6 +35,7 @@ export class DriveUploader {
     private readonly drive: drive_v3.Drive,
     private readonly trayMenu: TrayMenu,
     private readonly shortener: UrlShortener,
+    private readonly logger: Logger,
     @inject(IocSymbols.config) private readonly config: JsonConfig,
   ) {
     combineLatest(
@@ -46,11 +48,18 @@ export class DriveUploader {
     boolean,
     Screenshot
   ]): Promise<void> {
+    this.logger.debug('DriveUploader: upload a new screenshot');
     if (!authenticated) {
+      this.logger.info(
+        'DriveUploader: user not authenticated, cannot upload anything.',
+      );
       delete this.folderId;
       return;
     }
     if (!this.folderId) {
+      this.logger.info(
+        'DriveUploader: no folder id present, find drive folder.',
+      );
       // google and typescript ¯\_(ツ)_/¯
       const body = await this.drive.files.list({
         q:
@@ -60,6 +69,9 @@ export class DriveUploader {
       } as any);
 
       if (body.data.files && body.data.files.length <= 0) {
+        this.logger.info(
+          'DriveUploader: no folder found, creating drive folder.',
+        );
         // google and typescript ¯\_(ツ)_/¯
         const folder = await this.drive.files.create({
           resource: {
@@ -72,8 +84,14 @@ export class DriveUploader {
           fields: 'id',
         } as any);
         this.folderId = folder.data.id || '';
+        this.logger.debug(
+          `DriveUploader: created folder with id "${this.folderId}".`,
+        );
       } else {
         this.folderId = (body.data.files || [])[0].id || '';
+        this.logger.debug(
+          `DriveUploader: found folder with id "${this.folderId}".`,
+        );
       }
     }
 
@@ -87,11 +105,13 @@ export class DriveUploader {
       [] as DriveShotsSharedImage[],
     );
     images.unshift(sharedImage);
+    this.logger.debug(`DriveUploader: add image to the history list.`);
     this.config.set('shared-images', images.slice(0, 10));
 
     clipboard.writeText(sharedImage.url);
 
     if (existsSync(screenshot.path)) {
+      this.logger.debug(`DriveUploader: delete image file from system.`);
       unlinkSync(screenshot.path);
     }
 
@@ -101,6 +121,7 @@ export class DriveUploader {
     });
 
     notification.on('click', () => {
+      this.logger.debug(`DriveUploader: notification clicked, open url.`);
       opn(sharedImage.url);
     });
 
@@ -119,7 +140,7 @@ export class DriveUploader {
       },
       parents: [this.folderId],
     };
-
+    this.logger.debug(`DriveUploader: upload data to drive.`);
     const stream = new Duplex();
     stream.push(screenshot.data);
     stream.push(null);
@@ -145,6 +166,9 @@ export class DriveUploader {
   private async shareFile(
     image: DriveShotsImage,
   ): Promise<DriveShotsSharedImage> {
+    this.logger.debug(
+      `DriveUploader: create share permissions for image "${image.name}".`,
+    );
     // google and typescript ¯\_(ツ)_/¯
     await this.drive.permissions.create({
       fileId: image.id,

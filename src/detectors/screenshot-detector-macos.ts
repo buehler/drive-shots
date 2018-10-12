@@ -6,6 +6,7 @@ import { join } from 'path';
 import { Observable, Subject } from 'rxjs';
 
 import { Authenticator } from '../authentication/google-auth';
+import { Logger } from '../utils/logger';
 import { Screenshot } from './Screenshot';
 import { ScreenshotDetector } from './screenshot-detector';
 
@@ -20,21 +21,28 @@ export class ScreenshotDetectorMacos implements ScreenshotDetector {
     return this._onScreenshotDetected;
   }
 
-  constructor(authenticator: Authenticator) {
+  constructor(authenticator: Authenticator, private readonly logger: Logger) {
     authenticator.onAuthenticationChanged.subscribe(auth =>
       this.authChanged(auth),
     );
   }
 
   private authChanged(authenticated: boolean): void {
+    this.logger.debug('ScreenshotDetector: the authentication state changed.');
     if (authenticated) {
       this.watcher = watch(WATCH_PATH);
       this.watcher.on('add', (path: string) => {
         readFile(path, (err, data) => {
           if (err) {
-            console.error(err);
+            this.logger.error(
+              'ScreenshotDetector: Error during readfile.',
+              err,
+            );
             return;
           }
+          this.logger.debug(
+            'ScreenshotDetector: Found new screenshot from desktop.',
+          );
           this._onScreenshotDetected.next({
             path,
             data,

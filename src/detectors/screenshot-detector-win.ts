@@ -6,6 +6,7 @@ import { join } from 'path';
 import { Observable, Subject } from 'rxjs';
 
 import { Authenticator } from '../authentication/google-auth';
+import { Logger } from '../utils/logger';
 import { Screenshot } from './Screenshot';
 import { ScreenshotDetector } from './screenshot-detector';
 
@@ -22,21 +23,28 @@ export class ScreenshotDetectorWin implements ScreenshotDetector {
     return this._onScreenshotDetected;
   }
 
-  constructor(authenticator: Authenticator) {
+  constructor(authenticator: Authenticator, private readonly logger: Logger) {
     authenticator.onAuthenticationChanged.subscribe(auth =>
       this.authChanged(auth),
     );
   }
 
   private authChanged(authenticated: boolean): void {
+    this.logger.debug('ScreenshotDetector: the authentication state changed.');
     if (authenticated) {
       this.watcher = watch(WATCH_PATH);
       this.watcher.on('add', (path: string) => {
         readFile(path, (err, data) => {
           if (err) {
-            console.error(err);
+            this.logger.debug(
+              'ScreenshotDetector: Error during readfile.',
+              err,
+            );
             return;
           }
+          this.logger.debug(
+            'ScreenshotDetector: Found new screenshot from file.',
+          );
           this._onScreenshotDetected.next({
             path,
             data,
@@ -48,6 +56,9 @@ export class ScreenshotDetectorWin implements ScreenshotDetector {
         const img = clipboard.readImage();
 
         if (img && !img.isEmpty() && this.hasDifference(img)) {
+          this.logger.debug(
+            'ScreenshotDetector: Found new screenshot from clipboard.',
+          );
           this.lastImage = img;
           this._onScreenshotDetected.next({
             path: 'clipboard/image.png',

@@ -6,6 +6,7 @@ import { parse } from 'url';
 
 import { JsonConfig } from '../config/json-config';
 import { IocSymbols } from '../ioc-symbols';
+import { Logger } from '../utils/logger';
 import { AuthToken } from './auth-token';
 
 const opn = require('opn');
@@ -52,6 +53,7 @@ export class Authenticator {
   constructor(
     @inject(IocSymbols.config) private readonly config: JsonConfig,
     private readonly drive: drive_v3.Drive,
+    private readonly logger: Logger,
   ) {
     this.isAuthenticated().then(auth =>
       this._onAuthenticationChanged.next(auth),
@@ -59,13 +61,16 @@ export class Authenticator {
   }
 
   public async authenticate(): Promise<void> {
+    this.logger.info('Authenticator: Authenticate the user');
     const token = await this.getAuthToken();
+    this.logger.debug('Authenticator: Got the token');
     this.stopListener();
     this.config.set('google-auth-token', token);
     this._onAuthenticationChanged.next(await this.isAuthenticated());
   }
 
   public deauthorize(): void {
+    this.logger.info('Authenticator: Deauthorize the user');
     this.config.delete('google-auth-token');
     this.config.delete('shared-images');
     this._onAuthenticationChanged.next(false);
@@ -85,6 +90,10 @@ export class Authenticator {
           response.writeHead(401, { 'Content-Type': 'text/html' });
           response.write(
             `There was an error with the authentication: ${err[1]}`,
+          );
+          this.logger.error(
+            'Authenticator: there was an error during authorization',
+            err[1],
           );
           response.end();
           reject();
@@ -128,6 +137,7 @@ export class Authenticator {
   private startListener(
     handler: (request: IncomingMessage, response: ServerResponse) => void,
   ): Promise<number> {
+    this.logger.debug('Authenticator: Started http server for auth.');
     this.server = createServer(handler);
 
     return new Promise((resolve, reject) => {
@@ -151,6 +161,7 @@ export class Authenticator {
   }
 
   private async isAuthenticated(): Promise<boolean> {
+    this.logger.debug('Authenticator: Check if the user is authenticated.');
     if (!this.config.has('google-auth-token')) {
       return false;
     }

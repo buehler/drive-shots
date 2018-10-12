@@ -1,13 +1,18 @@
 import { drive_v3 } from 'googleapis';
 import { injectable } from 'inversify';
+import { Logger } from '../utils/logger';
 
 const opn = require('opn');
 
 @injectable()
 export class AppFolderOpener {
-  constructor(private readonly drive: drive_v3.Drive) {}
+  constructor(
+    private readonly drive: drive_v3.Drive,
+    private readonly logger: Logger,
+  ) {}
 
   public async openAppFolder(): Promise<void> {
+    this.logger.debug('AppFolderOpener: Open the app folder');
     // google and typescript ¯\_(ツ)_/¯
     const body = await this.drive.files.list({
       q:
