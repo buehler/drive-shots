@@ -1,3 +1,4 @@
-export const iocSymbols = {
-  config: Symbol('config'),
-};
+export enum IocSymbols {
+  config = 'config',
+  screenshotDetector = 'screenshotDetector',
+}

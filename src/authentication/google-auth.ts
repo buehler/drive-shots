@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { parse } from 'url';
 
 import { JsonConfig } from '../config/json-config';
-import { iocSymbols } from '../ioc-symbols';
+import { IocSymbols } from '../ioc-symbols';
 import { AuthToken } from './auth-token';
 
 const opn = require('opn');
@@ -50,7 +50,7 @@ export class Authenticator {
   }
 
   constructor(
-    @inject(iocSymbols.config) private readonly config: JsonConfig,
+    @inject(IocSymbols.config) private readonly config: JsonConfig,
     private readonly drive: drive_v3.Drive,
   ) {
     this.isAuthenticated().then(auth =>

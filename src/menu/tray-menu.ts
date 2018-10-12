@@ -14,8 +14,9 @@ import { Assets } from '../assets';
 import { Authenticator } from '../authentication/google-auth';
 import { JsonConfig } from '../config/json-config';
 import { HistoryDetector } from '../history/history-detector';
-import { iocSymbols } from '../ioc-symbols';
+import { IocSymbols } from '../ioc-symbols';
 import { DriveShotsSharedImage } from '../models/drive-shots-image';
+import { AutoUpdater } from '../utils/auto-updater';
 import { AppFolderOpener } from './app-folder-opener';
 import { TrayIconState } from './tray-icon-state';
 
@@ -46,10 +47,11 @@ export class TrayMenu {
 
   constructor(
     historyDetector: HistoryDetector,
+    autoUpdater: AutoUpdater,
     private readonly authenticator: Authenticator,
     private readonly assets: Assets,
     private readonly drive: drive_v3.Drive,
-    @inject(iocSymbols.config) private readonly config: JsonConfig,
+    @inject(IocSymbols.config) private readonly config: JsonConfig,
     private readonly opener: AppFolderOpener,
   ) {
     this.idleIcon = assets.getNativeImage('icons/tray-drive-shots.png', true);
@@ -65,12 +67,15 @@ export class TrayMenu {
 
     combineLatest(
       authenticator.onAuthenticationChanged,
+      autoUpdater.onUpdateAvailable,
       historyDetector.onHistoryDetected,
-    ).subscribe(([auth]) => this.buildContextMenu(auth));
+    ).subscribe(([auth, upd]) => this.buildContextMenu(auth, upd));
   }
 
-  // TODO: authenticated combine with on update available
-  private async buildContextMenu(authenticated: boolean): Promise<void> {
+  private async buildContextMenu(
+    authenticated: boolean,
+    updateAvailable: boolean,
+  ): Promise<void> {
     this.trayElement.setContextMenu(
       Menu.buildFromTemplate([
         ...(await this.authenticatedTemplate(authenticated)),
@@ -93,12 +98,7 @@ export class TrayMenu {
           },
         },
         { type: 'separator' },
-        {
-          label: 'Quit',
-          click: () => {
-            app.quit();
-          },
-        },
+        ...this.updateAvailableTemplate(updateAvailable),
       ]),
     );
   }
@@ -158,6 +158,36 @@ export class TrayMenu {
         label: 'Open folder in browser',
         type: 'normal',
         click: () => this.opener.openAppFolder(),
+      },
+    ];
+  }
+
+  private updateAvailableTemplate(
+    updateAvailable: boolean,
+  ): MenuItemConstructorOptions[] {
+    if (updateAvailable) {
+      return [
+        {
+          label: 'Update and Restart',
+          click: () => {
+            app.relaunch();
+            app.quit();
+          },
+        },
+        {
+          label: 'Quit',
+          click: () => {
+            app.quit();
+          },
+        },
+      ];
+    }
+    return [
+      {
+        label: 'Quit',
+        click: () => {
+          app.quit();
+        },
       },
     ];
   }

@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs';
 
 import { Authenticator } from '../authentication/google-auth';
 import { JsonConfig } from '../config/json-config';
-import { iocSymbols } from '../ioc-symbols';
+import { IocSymbols } from '../ioc-symbols';
 
 @injectable()
 export class HistoryDetector {
@@ -17,7 +17,7 @@ export class HistoryDetector {
   constructor(
     private readonly authenticator: Authenticator,
     private readonly drive: drive_v3.Drive,
-    @inject(iocSymbols.config) private readonly config: JsonConfig,
+    @inject(IocSymbols.config) private readonly config: JsonConfig,
   ) {
     this.authenticator.onAuthenticationChanged.subscribe(auth =>
       this.getScreenHistory(auth),
