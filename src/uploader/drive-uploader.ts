@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto';
-import { clipboard } from 'electron';
+import { clipboard, Notification } from 'electron';
 import { existsSync, unlinkSync } from 'fs';
 import { drive_v3 } from 'googleapis/build/src/apis/drive/v3';
 import { inject, injectable } from 'inversify';
@@ -95,23 +95,16 @@ export class DriveUploader {
       unlinkSync(screenshot.path);
     }
 
-    // notify(
-    //   {
-    //     message: 'The URL has been copied to your clipboard.',
-    //     title: 'Screenshot uploaded',
-    //     icon: join(__dirname, '..', 'assets', 'images', 'icon.png'),
-    //     wait: true,
-    //   },
-    //   (_err, response) => {
-    //     // "activate" -> mac
-    //     if (
-    //       response.indexOf('clicked') >= 0 ||
-    //       response.indexOf('activate') >= 0
-    //     ) {
-    //       opn(sharedImage.url);
-    //     }
-    //   },
-    // );
+    const notification = new Notification({
+      title: 'Screenshot uploaded',
+      body: 'The URL has been copied to your clipboard.',
+    });
+
+    notification.on('click', () => {
+      opn(sharedImage.url);
+    });
+
+    notification.show();
   }
 
   private async uploadToFolder(
