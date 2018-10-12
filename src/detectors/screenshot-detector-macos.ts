@@ -13,11 +13,11 @@ const WATCH_PATH = join(app.getPath('desktop'), 'Screen*.png');
 
 @injectable()
 export class ScreenshotDetectorMacos implements ScreenshotDetector {
-  private _screenshotDetected: Subject<Screenshot> = new Subject();
+  private _onScreenshotDetected: Subject<Screenshot> = new Subject();
   private watcher: FSWatcher | undefined;
 
-  public get screenshotDetected(): Observable<Screenshot> {
-    return this._screenshotDetected;
+  public get onScreenshotDetected(): Observable<Screenshot> {
+    return this._onScreenshotDetected;
   }
 
   constructor(authenticator: Authenticator) {
@@ -35,7 +35,7 @@ export class ScreenshotDetectorMacos implements ScreenshotDetector {
             console.error(err);
             return;
           }
-          this._screenshotDetected.next({
+          this._onScreenshotDetected.next({
             path,
             data,
           });

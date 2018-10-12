@@ -13,13 +13,13 @@ const WATCH_PATH = join(app.getPath('pictures'), 'Screenshot*.png');
 
 @injectable()
 export class ScreenshotDetectorLinux implements ScreenshotDetector {
-  private _screenshotDetected: Subject<Screenshot> = new Subject();
+  private _onScreenshotDetected: Subject<Screenshot> = new Subject();
   private watcher: FSWatcher | undefined;
   private interval: NodeJS.Timer | undefined;
   private lastImage: NativeImage | undefined;
 
-  public get screenshotDetected(): Observable<Screenshot> {
-    return this._screenshotDetected;
+  public get onScreenshotDetected(): Observable<Screenshot> {
+    return this._onScreenshotDetected;
   }
 
   constructor(authenticator: Authenticator) {
@@ -37,7 +37,7 @@ export class ScreenshotDetectorLinux implements ScreenshotDetector {
             console.error(err);
             return;
           }
-          this._screenshotDetected.next({
+          this._onScreenshotDetected.next({
             path,
             data,
           });
@@ -49,7 +49,7 @@ export class ScreenshotDetectorLinux implements ScreenshotDetector {
 
         if (img && !img.isEmpty() && this.hasDifference(img)) {
           this.lastImage = img;
-          this._screenshotDetected.next({
+          this._onScreenshotDetected.next({
             path: 'clipboard/image.png',
             data: img.toPNG(),
           });
