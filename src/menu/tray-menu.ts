@@ -1,10 +1,19 @@
-import { app, clipboard, Menu, MenuItemConstructorOptions, NativeImage, Tray } from 'electron';
+import {
+  app,
+  clipboard,
+  Menu,
+  MenuItemConstructorOptions,
+  NativeImage,
+  Tray,
+} from 'electron';
 import { drive_v3 } from 'googleapis';
 import { inject, injectable } from 'inversify';
+import { combineLatest } from 'rxjs';
 
 import { Assets } from '../assets';
 import { Authenticator } from '../authentication/google-auth';
 import { JsonConfig } from '../config/json-config';
+import { HistoryDetector } from '../history/history-detector';
 import { iocSymbols } from '../ioc-symbols';
 import { DriveShotsSharedImage } from '../models/drive-shots-image';
 import { AppFolderOpener } from './app-folder-opener';
@@ -36,6 +45,7 @@ export class TrayMenu {
   }
 
   constructor(
+    historyDetector: HistoryDetector,
     private readonly authenticator: Authenticator,
     private readonly assets: Assets,
     private readonly drive: drive_v3.Drive,
@@ -53,9 +63,10 @@ export class TrayMenu {
     );
     this.trayElement = new Tray(this.idleIcon);
 
-    authenticator.onAuthenticationChanged.subscribe(auth =>
-      this.buildContextMenu(auth),
-    );
+    combineLatest(
+      authenticator.onAuthenticationChanged,
+      historyDetector.onHistoryDetected,
+    ).subscribe(([auth]) => this.buildContextMenu(auth));
   }
 
   // TODO: authenticated combine with on update available
