@@ -6,7 +6,9 @@ import { Assets } from '../assets';
 import { Authenticator } from '../authentication/google-auth';
 import { JsonConfig } from '../config/json-config';
 import { iocSymbols } from '../ioc-symbols';
-import { DriveShotsSharedImage } from './tray-icon-state';
+import { DriveShotsSharedImage } from '../models/drive-shots-image';
+import { AppFolderOpener } from './app-folder-opener';
+import { TrayIconState } from './tray-icon-state';
 
 const opn = require('opn');
 const autoLaunch = require('auto-launch');
@@ -38,6 +40,7 @@ export class TrayMenu {
     private readonly assets: Assets,
     private readonly drive: drive_v3.Drive,
     @inject(iocSymbols.config) private readonly config: JsonConfig,
+    private readonly opener: AppFolderOpener,
   ) {
     this.idleIcon = assets.getNativeImage('icons/tray-drive-shots.png', true);
     this.syncIcon = assets.getNativeImage(
@@ -143,7 +146,7 @@ export class TrayMenu {
       {
         label: 'Open folder in browser',
         type: 'normal',
-        // click: () => this.opener.openAppFolder(),
+        click: () => this.opener.openAppFolder(),
       },
     ];
   }

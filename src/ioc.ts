@@ -6,6 +6,7 @@ import { Authenticator } from './authentication/google-auth';
 import { JsonConfig, jsonConfig } from './config/json-config';
 import { DriveShots } from './drive-shots';
 import { iocSymbols } from './ioc-symbols';
+import { AppFolderOpener } from './menu/app-folder-opener';
 import { TrayMenu } from './menu/tray-menu';
 
 const ioc = new Container();
@@ -16,5 +17,6 @@ ioc.bind(Assets).to(Assets);
 ioc.bind(Authenticator).to(Authenticator);
 ioc.bind<JsonConfig>(iocSymbols.config).toConstantValue(jsonConfig);
 ioc.bind(drive_v3.Drive).toConstantValue(google.drive('v3'));
+ioc.bind(AppFolderOpener).to(AppFolderOpener);
 
 export const container = ioc;
