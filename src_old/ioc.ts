@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 
-import { google } from 'googleapis';
-import { Drive } from 'googleapis/build/src/apis/drive/v3';
+import { drive_v3, google } from 'googleapis';
 import { Container } from 'inversify';
 import { platform } from 'os';
 
@@ -24,35 +23,65 @@ const ioc = new Container();
 
 // General bindings
 
-ioc.bind<DriveShots>(iocSymbols.driveShots).to(DriveShots).inSingletonScope();
+ioc
+  .bind<DriveShots>(iocSymbols.driveShots)
+  .to(DriveShots)
+  .inSingletonScope();
 ioc.bind<Assets>(iocSymbols.assets).to(Assets);
-ioc.bind<Drive>(iocSymbols.drive).toConstantValue(google.drive('v3'));
-ioc.bind<AutoUpdater>(iocSymbols.autoUpdater).to(AutoUpdater).inSingletonScope();
+ioc.bind<drive_v3.Drive>(iocSymbols.drive).toConstantValue(google.drive('v3'));
+ioc
+  .bind<AutoUpdater>(iocSymbols.autoUpdater)
+  .to(AutoUpdater)
+  .inSingletonScope();
 ioc.bind<JsonConfig>(iocSymbols.config).toConstantValue(jsonConfig);
-ioc.bind<Authentication>(iocSymbols.authentication).to(Authentication).inSingletonScope();
-ioc.bind<TrayIcon>(iocSymbols.trayIcon).to(TrayIcon).inSingletonScope();
-ioc.bind<DriveUploader>(iocSymbols.uploader).to(DriveUploader).inSingletonScope();
-ioc.bind<HistoryDetector>(iocSymbols.historyDetector).to(HistoryDetector).inSingletonScope();
-ioc.bind<AppFolderOpener>(iocSymbols.appFolderOpener).to(AppFolderOpener).inSingletonScope();
+ioc
+  .bind<Authentication>(iocSymbols.authentication)
+  .to(Authentication)
+  .inSingletonScope();
+ioc
+  .bind<TrayIcon>(iocSymbols.trayIcon)
+  .to(TrayIcon)
+  .inSingletonScope();
+ioc
+  .bind<DriveUploader>(iocSymbols.uploader)
+  .to(DriveUploader)
+  .inSingletonScope();
+ioc
+  .bind<HistoryDetector>(iocSymbols.historyDetector)
+  .to(HistoryDetector)
+  .inSingletonScope();
+ioc
+  .bind<AppFolderOpener>(iocSymbols.appFolderOpener)
+  .to(AppFolderOpener)
+  .inSingletonScope();
 
 // Logger
 
 // Windows bindings
 
 if (platform() === 'win32') {
-    ioc.bind<ScreenshotDetector>(iocSymbols.screenshotDetector).to(ScreenshotDetectorWin).inSingletonScope();
+  ioc
+    .bind<ScreenshotDetector>(iocSymbols.screenshotDetector)
+    .to(ScreenshotDetectorWin)
+    .inSingletonScope();
 }
 
 // OSX bindings
 
 if (platform() === 'darwin') {
-    ioc.bind<ScreenshotDetector>(iocSymbols.screenshotDetector).to(ScreenshotDetectorMacos).inSingletonScope();
+  ioc
+    .bind<ScreenshotDetector>(iocSymbols.screenshotDetector)
+    .to(ScreenshotDetectorMacos)
+    .inSingletonScope();
 }
 
 // Linux bindings
 
 if (platform() === 'linux') {
-    ioc.bind<ScreenshotDetector>(iocSymbols.screenshotDetector).to(ScreenshotDetectorLinux).inSingletonScope();
+  ioc
+    .bind<ScreenshotDetector>(iocSymbols.screenshotDetector)
+    .to(ScreenshotDetectorLinux)
+    .inSingletonScope();
 }
 
 export { ioc };

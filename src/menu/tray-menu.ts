@@ -1,11 +1,12 @@
-import { app, Menu, MenuItemConstructorOptions, NativeImage, Tray } from 'electron';
+import { app, clipboard, Menu, MenuItemConstructorOptions, NativeImage, Tray } from 'electron';
+import { drive_v3 } from 'googleapis';
 import { inject, injectable } from 'inversify';
 
 import { Assets } from '../assets';
 import { Authenticator } from '../authentication/google-auth';
 import { JsonConfig } from '../config/json-config';
 import { iocSymbols } from '../ioc-symbols';
-import { TrayIconState } from './tray-icon-state';
+import { DriveShotsSharedImage } from './tray-icon-state';
 
 const opn = require('opn');
 const autoLaunch = require('auto-launch');
@@ -35,6 +36,7 @@ export class TrayMenu {
   constructor(
     private readonly authenticator: Authenticator,
     private readonly assets: Assets,
+    private readonly drive: drive_v3.Drive,
     @inject(iocSymbols.config) private readonly config: JsonConfig,
   ) {
     this.idleIcon = assets.getNativeImage('icons/tray-drive-shots.png', true);
@@ -55,99 +57,94 @@ export class TrayMenu {
 
   // TODO: authenticated combine with on update available
   private async buildContextMenu(authenticated: boolean): Promise<void> {
-    const template: MenuItemConstructorOptions[] = [
-      { type: 'separator' },
-      {
-        label: 'Autostart app on login',
-        type: 'checkbox',
-        checked: this.config.get('autostart.enabled', false),
-        click: async () => {
-          const enabled = this.config.get('autostart.enabled', false);
-          this.config.set('autostart.enabled', !enabled);
-          const autoLauncher = new autoLaunch({ name: 'Drive Shots' });
-          const isEnabled = await autoLauncher.isEnabled();
-          if (!isEnabled && !enabled) {
-            autoLauncher.enable();
-          }
-          if (isEnabled && enabled) {
-            autoLauncher.disable();
-          }
+    this.trayElement.setContextMenu(
+      Menu.buildFromTemplate([
+        ...(await this.authenticatedTemplate(authenticated)),
+        { type: 'separator' },
+        {
+          label: 'Autostart app on login',
+          type: 'checkbox',
+          checked: this.config.get('autostart.enabled', false),
+          click: async () => {
+            const enabled = this.config.get('autostart.enabled', false);
+            this.config.set('autostart.enabled', !enabled);
+            const autoLauncher = new autoLaunch({ name: 'Drive Shots' });
+            const isEnabled = await autoLauncher.isEnabled();
+            if (!isEnabled && !enabled) {
+              autoLauncher.enable();
+            }
+            if (isEnabled && enabled) {
+              autoLauncher.disable();
+            }
+          },
         },
-      },
-      { type: 'separator' },
-      {
-        label: 'Quit',
-        click: () => {
-          app.quit();
+        { type: 'separator' },
+        {
+          label: 'Quit',
+          click: () => {
+            app.quit();
+          },
         },
-      },
-    ];
+      ]),
+    );
+  }
 
-    if (authenticated) {
-    } else {
-      template.unshift({
-        label: 'Authenticate Drive',
-        icon: this.assets.getNativeImage('images/drive.png'),
-        click: () => this.authenticator.authenticate(),
-      });
+  private async authenticatedTemplate(
+    authenticated: boolean,
+  ): Promise<MenuItemConstructorOptions[]> {
+    if (!authenticated) {
+      return [
+        {
+          label: 'Authenticate Drive',
+          icon: this.assets.getNativeImage('images/drive.png'),
+          click: () => this.authenticator.authenticate(),
+        },
+      ];
     }
 
-    // if (authenticated) {
-    //   const userinfo = await this.drive.about.get({
-    //     fields: 'user,storageQuota',
-    //   });
-    //   const usage = userinfo.data.storageQuota.usage / 1024 / 1024 / 1024;
-    //   const images = this.config.get(
-    //     'shared-images',
-    //     [] as DriveShotsSharedImage[],
-    //   );
-    //   template = [
-    //     {
-    //       label: userinfo.data.user.displayName,
-    //       icon: this.assets.getNativeImage('images/drive.png'),
-    //       type: 'submenu',
-    //       submenu: [
-    //         {
-    //           label: `usage: ${Math.round(usage * 100) / 100} GB`,
-    //           enabled: false,
-    //         },
-    //         { type: 'separator' },
-    //         {
-    //           label: 'Deauthorize',
-    //           click: () => this.authentication.deauthorize(),
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       label: 'History',
-    //       type: 'submenu',
-    //       submenu: images.map(image => ({
-    //         label: image.name,
-    //         click: () => {
-    //           opn(image.url);
-    //           clipboard.writeText(image.url);
-    //         },
-    //       })),
-    //     },
-    //     { type: 'separator' },
-    //     {
-    //       label: 'Open folder in browser',
-    //       type: 'normal',
-    //       click: () => this.opener.openAppFolder(),
-    //     },
-    //     ...template,
-    //   ];
-    // } else {
-    //   template = [
-    // {
-    //   label: 'Authenticate Drive',
-    //   icon: this.assets.getNativeImage('images/drive.png'),
-    //   click: () => this.authentication.authenticate(),
-    // },
-    //     ...template,
-    //   ];
-    // }
-    const context = Menu.buildFromTemplate(template);
-    this.trayElement.setContextMenu(context);
+    const userinfo = await this.drive.about.get({
+      fields: 'user,storageQuota',
+    } as any);
+    const usage = userinfo.data.storageQuota.usage / 1024 / 1024 / 1024;
+    const images = this.config.get(
+      'shared-images',
+      [] as DriveShotsSharedImage[],
+    );
+
+    return [
+      {
+        label: userinfo.data.user!.displayName,
+        icon: this.assets.getNativeImage('images/drive.png'),
+        type: 'submenu',
+        submenu: [
+          {
+            label: `usage: ${Math.round(usage * 100) / 100} GB`,
+            enabled: false,
+          },
+          { type: 'separator' },
+          {
+            label: 'Deauthorize',
+            click: () => this.authenticator.deauthorize(),
+          },
+        ],
+      },
+      {
+        label: 'History',
+        type: 'submenu',
+        submenu: images.map(image => ({
+          label: image.name,
+          click: () => {
+            opn(image.url);
+            clipboard.writeText(image.url);
+          },
+        })),
+      },
+      { type: 'separator' },
+      {
+        label: 'Open folder in browser',
+        type: 'normal',
+        // click: () => this.opener.openAppFolder(),
+      },
+    ];
   }
 }

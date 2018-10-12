@@ -1,3 +1,4 @@
+import { drive_v3, google } from 'googleapis';
 import { Container } from 'inversify';
 
 import { Assets } from './assets';
@@ -14,5 +15,6 @@ ioc.bind(TrayMenu).to(TrayMenu);
 ioc.bind(Assets).to(Assets);
 ioc.bind(Authenticator).to(Authenticator);
 ioc.bind<JsonConfig>(iocSymbols.config).toConstantValue(jsonConfig);
+ioc.bind(drive_v3.Drive).toConstantValue(google.drive('v3'));
 
 export const container = ioc;
