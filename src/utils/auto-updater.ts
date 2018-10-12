@@ -22,6 +22,7 @@ export class AutoUpdater {
     this._onUpdateAvailable.next(
       !!(await autoUpdater.checkForUpdatesAndNotify()),
     );
+
     setInterval(
       async () =>
         this._onUpdateAvailable.next(
