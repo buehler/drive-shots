@@ -17,6 +17,7 @@ import { TrayMenu } from './menu/tray-menu';
 import { DriveUploader } from './uploader/drive-uploader';
 import { UrlShortener } from './url-shortener/smrtv-shortener';
 import { AutoUpdater } from './utils/auto-updater';
+import { Logger } from './utils/logger';
 
 const ioc = new Container();
 
@@ -50,6 +51,10 @@ ioc
   .to(HistoryDetector)
   .inSingletonScope();
 ioc.bind<JsonConfig>(IocSymbols.config).toConstantValue(jsonConfig);
+ioc
+  .bind(Logger)
+  .to(Logger)
+  .inSingletonScope();
 ioc
   .bind(TrayMenu)
   .to(TrayMenu)
