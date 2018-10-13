@@ -33,6 +33,9 @@ export class TrayMenu {
   private syncIcon: NativeImage;
   private errorIcon: NativeImage;
 
+  private authenticated: boolean = false;
+  private updateAvailable: boolean = false;
+
   public set state(value: TrayIconState) {
     this.logger.debug(
       `TrayMenu: set new menu icon state "${TrayIconState[value]}".`,
@@ -72,19 +75,24 @@ export class TrayMenu {
     );
     this.trayElement = new Tray(this.idleIcon);
 
-    combineLatest(
-      authenticator.onAuthenticationChanged,
-      autoUpdater.onUpdateAvailable,
-      historyDetector.onHistoryDetected,
-      uploader.onFinishedUploading,
-    ).subscribe(([auth, upd]) => this.buildContextMenu(auth, upd));
-
+    authenticator.onAuthenticationChanged.subscribe((auth: boolean) => {
+      this.authenticated = auth;
+      this.buildContextMenu(this.authenticated, this.updateAvailable);
+    });
+    autoUpdater.onUpdateAvailable.subscribe((available: boolean) => {
+      this.updateAvailable = available;
+      this.buildContextMenu(this.authenticated, this.updateAvailable);
+    });
+    historyDetector.onHistoryDetected.subscribe(() =>
+      this.buildContextMenu(this.authenticated, this.updateAvailable),
+    );
     uploader.onStartUploading.subscribe(
       () => (this.state = TrayIconState.syncing),
     );
-    uploader.onFinishedUploading.subscribe(
-      () => (this.state = TrayIconState.idle),
-    );
+    uploader.onFinishedUploading.subscribe(() => {
+      this.state = TrayIconState.idle;
+      this.buildContextMenu(this.authenticated, this.updateAvailable);
+    });
   }
 
   private async buildContextMenu(

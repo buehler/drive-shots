@@ -120,6 +120,7 @@ export class DriveUploader {
       this.logger.debug(`DriveUploader: delete image file from system.`);
       unlinkSync(screenshot.path);
     }
+
     this._onFinishedUploading.next(screenshot);
 
     const notification = new Notification({
