@@ -8,7 +8,6 @@ import {
 } from 'electron';
 import { drive_v3 } from 'googleapis';
 import { inject, injectable } from 'inversify';
-import { combineLatest } from 'rxjs';
 
 import { Assets } from '../assets';
 import { Authenticator } from '../authentication/google-auth';

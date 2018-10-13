@@ -1,6 +1,6 @@
 {
   "name": "drive-shots",
-  "version": "2.7.0",
+  "version": "0.0.0-development",
   "description": "electron app that works with google drive to save screenshots and copy shortened url into the clipboard",
   "main": "build/index.js",
   "scripts": {
