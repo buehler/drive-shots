@@ -1,33 +1,15 @@
 import { app } from 'electron';
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 
-import { Authentication } from './authentication';
-import { ScreenshotDetector } from './detectors/screenshot-detector';
-import { HistoryDetector } from './history/history-detector';
-import { iocSymbols } from './ioc-symbols';
-import { TrayIcon } from './menu/tray-icon';
-import { DriveUploader } from './uploader/drive-uploader';
-import { AutoUpdater } from './utils/auto-updater';
+import { TrayMenu } from './menu/tray-menu';
+import { Logger } from './utils/logger';
 
 @injectable()
 export class DriveShots {
-    constructor(
-        @inject(iocSymbols.autoUpdater) private updater: AutoUpdater,
-        @inject(iocSymbols.authentication) private auth: Authentication,
-        @inject(iocSymbols.trayIcon) private tray: TrayIcon,
-        @inject(iocSymbols.screenshotDetector) private detector: ScreenshotDetector,
-        @inject(iocSymbols.uploader) private uploader: DriveUploader,
-        @inject(iocSymbols.historyDetector) private historyDetector: HistoryDetector,
-    ) { }
+  constructor(_tray: TrayMenu, private readonly logger: Logger) {}
 
-    public start(): void {
-        app.dock && app.dock.hide();
-
-        this.updater.start();
-        this.historyDetector.setup();
-        this.tray.setup();
-        this.detector.setup();
-        this.uploader.setup();
-        this.auth.checkAuthentication();
-    }
+  public start(): void {
+    app.dock && app.dock.hide();
+    this.logger.info(`DriveShots: Started up an ready.`);
+  }
 }

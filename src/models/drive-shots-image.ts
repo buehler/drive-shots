@@ -1,8 +1,8 @@
 export interface DriveShotsImage {
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 }
 
 export interface DriveShotsSharedImage extends DriveShotsImage {
-    url: string;
+  url: string;
 }

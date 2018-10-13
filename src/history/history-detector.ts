@@ -1,47 +1,59 @@
-import { Drive } from 'googleapis/build/src/apis/drive/v3';
+import { drive_v3 } from 'googleapis';
 import { inject, injectable } from 'inversify';
+import { Observable, Subject } from 'rxjs';
 
-import { Authentication } from '../authentication';
+import { Authenticator } from '../authentication/google-auth';
 import { JsonConfig } from '../config/json-config';
-import { iocSymbols } from '../ioc-symbols';
-import { TrayIcon } from '../menu/tray-icon';
+import { IocSymbols } from '../ioc-symbols';
+import { Logger } from '../utils/logger';
 
 @injectable()
 export class HistoryDetector {
-    constructor(
-        @inject(iocSymbols.authentication) private readonly authentication: Authentication,
-        @inject(iocSymbols.drive) private readonly drive: Drive,
-        @inject(iocSymbols.config) private readonly config: JsonConfig,
-        @inject(iocSymbols.trayIcon) private readonly trayIcon: TrayIcon,
-    ) { }
+  private _onHistoryDetected: Subject<void> = new Subject();
 
-    public setup(): void {
-        this.authentication.authenticationChanged.subscribe(auth => this.getScreenHistory(auth));
+  public get onHistoryDetected(): Observable<void> {
+    return this._onHistoryDetected;
+  }
+
+  constructor(
+    private readonly authenticator: Authenticator,
+    private readonly drive: drive_v3.Drive,
+    private readonly logger: Logger,
+    @inject(IocSymbols.config) private readonly config: JsonConfig,
+  ) {
+    this.authenticator.onAuthenticationChanged.subscribe(auth =>
+      this.getScreenHistory(auth),
+    );
+  }
+
+  private async getScreenHistory(authenticated: boolean): Promise<void> {
+    if (!authenticated) {
+      this.logger.debug('HistoryDetector: not authenticated.');
+      return;
     }
 
-    private async getScreenHistory(authenticated: boolean): Promise<void> {
-        if (!authenticated) {
-            return;
-        }
+    const images = await this.drive.files.list({
+      q: `appProperties has { key = 'drive-shots' and value = 'drive-shots-image' }`,
+      orderBy: 'createdTime desc',
+      fields: 'files(id, name, appProperties, webViewLink)',
+    } as any);
 
-        const images = await this.drive.files.list(
-            {
-                q: `appProperties has { key = 'drive-shots' and value = 'drive-shots-image' }`,
-                orderBy: 'createdTime desc',
-                fields: 'files(id, name, appProperties, webViewLink)',
-            },
-        );
-
-        this.config.set(
-            'shared-images',
-            images.data.files
-                .slice(0, 10)
-                .map((googleFile: any) => ({
-                    id: googleFile.id,
-                    name: googleFile.name,
-                    url: googleFile.appProperties['short-url'] || googleFile.webViewLink,
-                })),
-        );
-        await this.trayIcon.buildContextMenu(authenticated);
+    if (!images.data.files) {
+      this.logger.info('HistoryDetector: no data files found online.');
+      return;
     }
+
+    this.config.set(
+      'shared-images',
+      images.data.files.slice(0, 10).map((googleFile: any) => ({
+        id: googleFile.id,
+        name: googleFile.name,
+        url: googleFile.appProperties['short-url'] || googleFile.webViewLink,
+      })),
+    );
+    this.logger.info(
+      `HistoryDetector: Found ${images.data.files.length} files online.`,
+    );
+    this._onHistoryDetected.next();
+  }
 }

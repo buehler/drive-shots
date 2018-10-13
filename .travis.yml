@@ -1,23 +1,19 @@
 language: node_js
-node_js: '9'
+node_js: '10'
 
 stages:
   - name: release
     if: branch = master AND type != pull_request
   - name: publish
     if: tag IS present
-  # - name: test
-  #   if: tag IS blank
 
 notifications:
   email: false
 
-cache: yarn
-
 jobs:
   include:
     - stage: release
-      script: yarn semantic-release
+      script: npx semantic-release
     - stage: publish
       os: linux
       addons:
@@ -26,13 +22,15 @@ jobs:
             - icnsutils
             - graphicsmagick
       before_script:
-        - yarn build
-        - yarn version --new-version "${TRAVIS_TAG:1:${#TRAVIS_TAG}}" --no-git-tag-version
-      script: yarn builder
+        - npm ci
+        - npm run build
+        - npm version "${TRAVIS_TAG:1:${#TRAVIS_TAG}}" --no-git-tag-version
+      script: npm run builder
     - stage: publish
       os: osx
-      osx_image: xcode9.0
+      osx_image: xcode9
       before_script:
-        - yarn build
-        - yarn version --new-version "${TRAVIS_TAG:1:${#TRAVIS_TAG}}" --no-git-tag-version
-      script: yarn builder
+        - npm ci
+        - npm run build
+        - npm version "${TRAVIS_TAG:1:${#TRAVIS_TAG}}" --no-git-tag-version
+      script: npm run builder

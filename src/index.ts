@@ -1,5 +1,10 @@
 import { app } from 'electron';
 
-app.on('ready', () => {
-    require('./main');
-});
+import { startup } from './main';
+
+async function electronStart(): Promise<void> {
+  await app.whenReady();
+  startup();
+}
+
+electronStart().catch(err => console.error(err));

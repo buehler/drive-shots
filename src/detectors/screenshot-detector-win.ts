@@ -1,12 +1,12 @@
 import { FSWatcher, watch } from 'chokidar';
 import { app, clipboard, NativeImage } from 'electron';
 import { readFile } from 'fs';
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 import { join } from 'path';
 import { Observable, Subject } from 'rxjs';
 
-import { Authentication } from '../authentication';
-import { iocSymbols } from '../ioc-symbols';
+import { Authenticator } from '../authentication/google-auth';
+import { Logger } from '../utils/logger';
 import { Screenshot } from './Screenshot';
 import { ScreenshotDetector } from './screenshot-detector';
 
@@ -14,74 +14,76 @@ const WATCH_PATH = join(app.getPath('pictures'), 'Screenshots');
 
 @injectable()
 export class ScreenshotDetectorWin implements ScreenshotDetector {
-    private _screenshotDetected: Subject<Screenshot> = new Subject();
-    private watcher: FSWatcher | undefined;
-    private interval: NodeJS.Timer | undefined;
-    private lastImage: NativeImage | undefined;
+  private _onScreenshotDetected: Subject<Screenshot> = new Subject();
+  private watcher: FSWatcher | undefined;
+  private interval: NodeJS.Timer | undefined;
+  private lastImage: NativeImage | undefined;
 
-    public get screenshotDetected(): Observable<Screenshot> {
-        return this._screenshotDetected;
-    }
+  public get onScreenshotDetected(): Observable<Screenshot> {
+    return this._onScreenshotDetected;
+  }
 
-    constructor(
-        @inject(iocSymbols.authentication) private readonly auth: Authentication,
-    ) { }
+  constructor(authenticator: Authenticator, private readonly logger: Logger) {
+    authenticator.onAuthenticationChanged.subscribe(auth =>
+      this.authChanged(auth),
+    );
+  }
 
-    public setup(): void {
-        this.auth.authenticationChanged.subscribe(auth => this.authChanged(auth));
-    }
-
-    private authChanged(authenticated: boolean): void {
-        if (authenticated) {
-            this.watcher = watch(WATCH_PATH);
-            this.watcher.on(
-                'add',
-                (path: string) => {
-                    readFile(path, (err, data) => {
-                        if (err) {
-                            console.error(err);
-                            return;
-                        }
-                        this._screenshotDetected.next({
-                            path,
-                            data,
-                        });
-                    });
-                },
+  private authChanged(authenticated: boolean): void {
+    this.logger.debug('ScreenshotDetector: the authentication state changed.');
+    if (authenticated) {
+      this.watcher = watch(WATCH_PATH);
+      this.watcher.on('add', (path: string) => {
+        readFile(path, (err, data) => {
+          if (err) {
+            this.logger.debug(
+              'ScreenshotDetector: Error during readfile.',
+              err,
             );
+            return;
+          }
+          this.logger.debug(
+            'ScreenshotDetector: Found new screenshot from file.',
+          );
+          this._onScreenshotDetected.next({
+            path,
+            data,
+          });
+        });
+      });
 
-            this.interval = setInterval(
-                () => {
-                    const img = clipboard.readImage();
+      this.interval = setInterval(() => {
+        const img = clipboard.readImage();
 
-                    if (img && !img.isEmpty() && this.hasDifference(img)) {
-                        this.lastImage = img;
-                        this._screenshotDetected.next({
-                            path: 'clipboard/image.png',
-                            data: img.toPNG(),
-                        });
-                        clipboard.clear();
-                    }
-                },
-                1000,
-            );
-        } else {
-            if (this.watcher) {
-                this.watcher.close();
-                delete this.watcher;
-            }
-            if (this.interval) {
-                clearInterval(this.interval);
-                delete this.interval;
-            }
+        if (img && !img.isEmpty() && this.hasDifference(img)) {
+          this.logger.debug(
+            'ScreenshotDetector: Found new screenshot from clipboard.',
+          );
+          this.lastImage = img;
+          this._onScreenshotDetected.next({
+            path: 'clipboard/image.png',
+            data: img.toPNG(),
+          });
+          clipboard.clear();
         }
+      },                          1000);
+    } else {
+      if (this.watcher) {
+        this.watcher.close();
+        delete this.watcher;
+      }
+      if (this.interval) {
+        clearInterval(this.interval);
+        delete this.interval;
+      }
+    }
+  }
+
+  private hasDifference(newImage: NativeImage): boolean {
+    if (!this.lastImage) {
+      return true;
     }
 
-    private hasDifference(newImage: NativeImage): boolean {
-        if (!this.lastImage) {
-            return true;
-        }
-
-        return newImage.toDataURL() !== this.lastImage.toDataURL();
-    }
+    return newImage.toDataURL() !== this.lastImage.toDataURL();
+  }
 }

@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 
 import { DriveShots } from './drive-shots';
-import { ioc } from './ioc';
-import { iocSymbols } from './ioc-symbols';
+import { container } from './ioc';
 
-const driveShots = ioc.get<DriveShots>(iocSymbols.driveShots);
-driveShots.start();
+export function startup(): void {
+  container.get(DriveShots).start();
+}
