@@ -7,7 +7,7 @@ import { Observable, Subject } from 'rxjs';
 
 import { Authenticator } from '../authentication/google-auth';
 import { Logger } from '../utils/logger';
-import { Screenshot } from './Screenshot';
+import { Screenshot } from './screenshot';
 import { ScreenshotDetector } from './screenshot-detector';
 
 const WATCH_PATH = join(app.getPath('pictures'), 'Screenshot*.png');

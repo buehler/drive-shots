@@ -10,7 +10,7 @@ import { Duplex } from 'stream';
 
 import { Authenticator } from '../authentication/google-auth';
 import { JsonConfig } from '../config/json-config';
-import { Screenshot } from '../detectors/Screenshot';
+import { Screenshot } from '../detectors/screenshot';
 import { ScreenshotDetector } from '../detectors/screenshot-detector';
 import { IocSymbols } from '../ioc-symbols';
 import {
