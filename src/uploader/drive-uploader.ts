@@ -5,7 +5,7 @@ import { drive_v3 } from 'googleapis/build/src/apis/drive/v3';
 import { inject, injectable } from 'inversify';
 import * as moment from 'moment';
 import { parse } from 'path';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Observable, Subject } from 'rxjs';
 import { Duplex } from 'stream';
 
 import { Authenticator } from '../authentication/google-auth';
@@ -13,8 +13,6 @@ import { JsonConfig } from '../config/json-config';
 import { Screenshot } from '../detectors/Screenshot';
 import { ScreenshotDetector } from '../detectors/screenshot-detector';
 import { IocSymbols } from '../ioc-symbols';
-import { TrayIconState } from '../menu/tray-icon-state';
-import { TrayMenu } from '../menu/tray-menu';
 import {
   DriveShotsImage,
   DriveShotsSharedImage,
@@ -28,12 +26,21 @@ const opn = require('opn');
 @injectable()
 export class DriveUploader {
   private folderId: string = '';
+  private _onStartUploading: Subject<Screenshot> = new Subject();
+  private _onFinishedUploading: Subject<Screenshot> = new Subject();
+
+  public get onStartUploading(): Observable<Screenshot> {
+    return this._onStartUploading;
+  }
+
+  public get onFinishedUploading(): Observable<Screenshot> {
+    return this._onFinishedUploading;
+  }
 
   constructor(
     authenticator: Authenticator,
     @inject(IocSymbols.screenshotDetector) detector: ScreenshotDetector,
     private readonly drive: drive_v3.Drive,
-    private readonly trayMenu: TrayMenu,
     private readonly shortener: UrlShortener,
     private readonly logger: Logger,
     @inject(IocSymbols.config) private readonly config: JsonConfig,
@@ -95,10 +102,9 @@ export class DriveUploader {
       }
     }
 
-    this.trayMenu.state = TrayIconState.syncing;
+    this._onStartUploading.next(screenshot);
     const image = await this.uploadToFolder(screenshot);
     const sharedImage = await this.shareFile(image);
-    this.trayMenu.state = TrayIconState.idle;
 
     const images = this.config.get(
       'shared-images',
@@ -114,6 +120,7 @@ export class DriveUploader {
       this.logger.debug(`DriveUploader: delete image file from system.`);
       unlinkSync(screenshot.path);
     }
+    this._onFinishedUploading.next(screenshot);
 
     const notification = new Notification({
       title: 'Screenshot uploaded',

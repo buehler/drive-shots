@@ -16,6 +16,7 @@ import { JsonConfig } from '../config/json-config';
 import { HistoryDetector } from '../history/history-detector';
 import { IocSymbols } from '../ioc-symbols';
 import { DriveShotsSharedImage } from '../models/drive-shots-image';
+import { DriveUploader } from '../uploader/drive-uploader';
 import { AutoUpdater } from '../utils/auto-updater';
 import { Logger } from '../utils/logger';
 import { AppFolderOpener } from './app-folder-opener';
@@ -52,6 +53,7 @@ export class TrayMenu {
   constructor(
     historyDetector: HistoryDetector,
     autoUpdater: AutoUpdater,
+    uploader: DriveUploader,
     private readonly authenticator: Authenticator,
     private readonly assets: Assets,
     private readonly drive: drive_v3.Drive,
@@ -74,7 +76,15 @@ export class TrayMenu {
       authenticator.onAuthenticationChanged,
       autoUpdater.onUpdateAvailable,
       historyDetector.onHistoryDetected,
+      uploader.onFinishedUploading,
     ).subscribe(([auth, upd]) => this.buildContextMenu(auth, upd));
+
+    uploader.onStartUploading.subscribe(
+      () => (this.state = TrayIconState.syncing),
+    );
+    uploader.onFinishedUploading.subscribe(
+      () => (this.state = TrayIconState.idle),
+    );
   }
 
   private async buildContextMenu(
