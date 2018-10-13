@@ -108,6 +108,36 @@ export class TrayMenu {
             }
           },
         },
+        {
+          type: 'submenu',
+          label: 'Log Level',
+          submenu: [
+            {
+              type: 'radio',
+              label: 'Debug',
+              checked: this.logger.level === 'debug',
+              click: () => (this.logger.level = 'debug'),
+            },
+            {
+              type: 'radio',
+              label: 'Info',
+              checked: this.logger.level === 'info',
+              click: () => (this.logger.level = 'info'),
+            },
+            {
+              type: 'radio',
+              label: 'Warning',
+              checked: this.logger.level === 'warn',
+              click: () => (this.logger.level = 'warn'),
+            },
+            {
+              type: 'radio',
+              label: 'Error',
+              checked: this.logger.level === 'error',
+              click: () => (this.logger.level = 'error'),
+            },
+          ],
+        },
         { type: 'separator' },
         ...this.updateAvailableTemplate(updateAvailable),
       ]),

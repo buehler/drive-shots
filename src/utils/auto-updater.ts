@@ -36,6 +36,7 @@ export class AutoUpdater {
       this._onUpdateAvailable.next(true);
     });
 
+    logger.debug('AutoUpdater: updater ready. check on startup.');
     autoUpdater.checkForUpdatesAndNotify();
     setInterval(() => autoUpdater.checkForUpdatesAndNotify(), CHECK_INTERVAL);
   }
